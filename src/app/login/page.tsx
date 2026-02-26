@@ -1,7 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import LoginForm from '@/components/auth/LoginForm';
+// 尝试这个更精准的路径，注意大小写必须和文件夹一模一样
+import LoginForm from '../../components/auth/LoginForm';
 
 export default function LoginPage() {
   return (
