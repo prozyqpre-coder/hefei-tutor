@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-// 尝试这个更精准的路径，注意大小写必须和文件夹一模一样
-import LoginForm from '../../components/auth/LoginForm';
+// 这里的 @ 代表 src 目录，能精准找到我们刚才建的文件
+import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
   return (
@@ -13,7 +13,6 @@ export default function LoginPage() {
             登录您的账号
           </h2>
         </div>
-        {/* 这个 Suspense 就是 Vercel 想要的那个“保护壳” */}
         <Suspense fallback={<div className="text-center">加载中...</div>}>
           <LoginForm />
         </Suspense>
