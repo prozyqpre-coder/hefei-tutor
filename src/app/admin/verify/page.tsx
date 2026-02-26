@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Loader2, XCircle, X } from "lucide-react";
 import { HEFEI_AREAS_FULL, SUBJECTS, GRADES_SHORT, GRADES } from "@/lib/constants";
@@ -50,6 +51,7 @@ type DemandAdminRow = {
 };
 
 export default function AdminVerifyPage() {
+  const router = useRouter();
   const [list, setList] = useState<PendingRow[]>([]);
   const [allTutors, setAllTutors] = useState<PendingRow[]>([]);
   const [demands, setDemands] = useState<DemandAdminRow[]>([]);
@@ -228,12 +230,25 @@ export default function AdminVerifyPage() {
     }
   }
 
+  async function handleLogout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.replace("/admin/login");
+    router.refresh();
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-xl font-bold">管理员 · 教员证件审核</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        所有申请单的证件大图，通过后显示「实名认证」，打回后显示「未认证」。
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h1 className="text-xl font-bold">管理员 · 教员证件审核</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            所有申请单的证件大图，通过后显示「实名认证」，打回后显示「未认证」。
+          </p>
+        </div>
+        <Button type="button" variant="ghost" size="sm" onClick={handleLogout}>
+          退出登录
+        </Button>
+      </div>
 
       <div className="mt-4 flex gap-2 rounded-full bg-muted p-1 text-xs font-medium">
         <button
