@@ -8,7 +8,7 @@ import { LayoutGrid, MessageSquare, User } from "lucide-react";
 const navItems = [
   { href: "/", label: "首页", icon: LayoutGrid },
   { href: "/board", label: "信息大厅", icon: MessageSquare },
-  { href: "/login", label: "我的", icon: User },
+  { href: "/auth", label: "我的", icon: User },
 ];
 
 export function BottomNav() {
