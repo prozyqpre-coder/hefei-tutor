@@ -71,7 +71,7 @@ export default function TutorPostPage() {
 
   useEffect(() => {
     if (!userLoading && !user) {
-      router.replace("/login?redirect=/tutor/post");
+      router.replace("/auth?redirect=/tutor/post");
     }
   }, [user, userLoading, router]);
 
@@ -140,7 +140,7 @@ export default function TutorPostPage() {
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) {
       setLoading(false);
-      router.replace("/login?redirect=/tutor/post");
+      router.replace("/auth?redirect=/tutor/post");
       return;
     }
 

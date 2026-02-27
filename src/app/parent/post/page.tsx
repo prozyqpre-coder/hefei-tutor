@@ -62,7 +62,7 @@ export default function ParentPostPage() {
 
   useEffect(() => {
     if (!userLoading && !user) {
-      router.replace("/login?redirect=/parent/post");
+      router.replace("/auth?redirect=/parent/post");
     }
   }, [user, userLoading, router]);
 
@@ -123,7 +123,7 @@ export default function ParentPostPage() {
     const { data: { user: authUser } } = await supabase.auth.getUser();
     if (!authUser) {
       setLoading(false);
-      router.replace("/login?redirect=/parent/post");
+      router.replace("/auth?redirect=/parent/post");
       return;
     }
 
@@ -167,7 +167,7 @@ export default function ParentPostPage() {
     return (
       <div className="px-4 py-8 text-center">
         <h1 className="text-lg font-semibold">请先登录</h1>
-        <Link href="/login?redirect=/parent/post" className="mt-6 inline-block">
+        <Link href="/auth?redirect=/parent/post" className="mt-6 inline-block">
           <Button>去登录</Button>
         </Link>
       </div>
