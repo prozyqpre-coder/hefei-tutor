@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,14 +20,17 @@ export default function AdminLoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: phone.trim(), password }),
+        credentials: "same-origin",
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setError(data?.error ?? "登录失败，请重试");
+        setLoading(false);
         return;
       }
-      router.replace("/admin/verify");
-      router.refresh();
+      // 整页跳转，确保 Cookie 被带到 /admin/verify，避免中间件误判未登录
+      window.location.href = "/admin/verify";
+      return;
     } finally {
       setLoading(false);
     }
