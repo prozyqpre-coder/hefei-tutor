@@ -1,18 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function LoginRedirectPage() {
   const router = useRouter();
-
   useEffect(() => {
-    router.replace('/auth');
+    router.replace("/contact");
   }, [router]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-sm text-muted-foreground">正在跳转到登录 / 注册页面…</p>
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <p className="text-sm text-muted-foreground">正在跳转…</p>
     </div>
   );
 }

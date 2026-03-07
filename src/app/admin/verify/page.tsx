@@ -55,7 +55,7 @@ export default function AdminVerifyPage() {
   const [list, setList] = useState<PendingRow[]>([]);
   const [allTutors, setAllTutors] = useState<PendingRow[]>([]);
   const [demands, setDemands] = useState<DemandAdminRow[]>([]);
-  const [tab, setTab] = useState<"tutors" | "demands">("tutors");
+  const [tab, setTab] = useState<"tutors" | "demands" | "publish">("tutors");
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +85,91 @@ export default function AdminVerifyPage() {
   const [editingMinSalary, setEditingMinSalary] = useState("");
   const [editingMaxSalary, setEditingMaxSalary] = useState("");
   const [editingNote, setEditingNote] = useState("");
+
+  // 发布新信息表单
+  const [publishType, setPublishType] = useState<"tutor" | "demand">("tutor");
+  const [publishLoading, setPublishLoading] = useState(false);
+  const [publishRealName, setPublishRealName] = useState("");
+  const [publishUniversity, setPublishUniversity] = useState("");
+  const [publishIdentity, setPublishIdentity] = useState<"本科生" | "研究生" | "">("");
+  const [publishGender, setPublishGender] = useState<"男" | "女" | "">("");
+  const [publishMode, setPublishMode] = useState<"线上" | "合肥线下" | "">("");
+  const [publishRegions, setPublishRegions] = useState<string[]>([]);
+  const [publishGrades, setPublishGrades] = useState<string[]>([]);
+  const [publishSubjects, setPublishSubjects] = useState<string[]>([]);
+  const [publishMinSalary, setPublishMinSalary] = useState("");
+  const [publishMaxSalary, setPublishMaxSalary] = useState("");
+  const [publishRegion, setPublishRegion] = useState("");
+  const [publishDetailAddress, setPublishDetailAddress] = useState("");
+  const [publishNote, setPublishNote] = useState("");
+
+  function togglePublishRegion(r: string) {
+    setPublishRegions((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
+  }
+  function togglePublishGrade(g: string) {
+    setPublishGrades((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
+  }
+  function togglePublishSubject(s: string) {
+    setPublishSubjects((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
+  }
+
+  async function handlePublishSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+    setPublishLoading(true);
+    try {
+      const body: Record<string, unknown> = {
+        type: publishType,
+        teach_mode: publishMode || null,
+        gender: publishGender || null,
+        min_salary: publishMinSalary.trim() ? Number(publishMinSalary) : null,
+        max_salary: publishMaxSalary.trim() ? Number(publishMaxSalary) : null,
+        note: publishNote.trim() || null,
+      };
+      if (publishType === "tutor") {
+        body.real_name = publishRealName.trim() || null;
+        body.university = publishUniversity.trim() || "";
+        body.identity = publishIdentity || null;
+        body.regions = publishRegions;
+        body.grades = publishGrades;
+        body.subjects = publishSubjects;
+      } else {
+        body.region = publishRegion.trim() || null;
+        body.detail_address = publishDetailAddress.trim() || null;
+        body.grades = publishGrades;
+        body.subjects = publishSubjects;
+      }
+      const res = await fetch("/api/admin/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "发布失败");
+      setMessage("发布成功，已直接上架。");
+      setPublishRealName("");
+      setPublishUniversity("");
+      setPublishIdentity("");
+      setPublishGender("");
+      setPublishMode("");
+      setPublishRegions([]);
+      setPublishGrades([]);
+      setPublishSubjects([]);
+      setPublishMinSalary("");
+      setPublishMaxSalary("");
+      setPublishRegion("");
+      setPublishDetailAddress("");
+      setPublishNote("");
+      fetchList();
+      fetchAllTutors();
+      fetchDemands();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "发布失败");
+    } finally {
+      setPublishLoading(false);
+    }
+  }
 
   function toggleEditingTutorRegion(r: string) {
     setEditingTutorRegions((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
@@ -270,6 +355,16 @@ export default function AdminVerifyPage() {
           )}
         >
           家长需求审核
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("publish")}
+          className={cn(
+            "flex-1 rounded-full px-3 py-1.5",
+            tab === "publish" ? "bg-background text-primary shadow-sm" : "text-muted-foreground"
+          )}
+        >
+          发布新信息
         </button>
       </div>
 
@@ -541,6 +636,127 @@ export default function AdminVerifyPage() {
             </ul>
           )}
         </>
+      )}
+
+      {/* 发布新信息 */}
+      {tab === "publish" && (
+        <form onSubmit={handlePublishSubmit} className="mt-6 space-y-4 rounded-xl border border-border bg-card p-4">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setPublishType("tutor")}
+              className={cn(
+                "flex-1 rounded-lg border px-3 py-2 text-sm font-medium",
+                publishType === "tutor" ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"
+              )}
+            >
+              发布教员信息
+            </button>
+            <button
+              type="button"
+              onClick={() => setPublishType("demand")}
+              className={cn(
+                "flex-1 rounded-lg border px-3 py-2 text-sm font-medium",
+                publishType === "demand" ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"
+              )}
+            >
+              发布家长需求
+            </button>
+          </div>
+
+          {publishType === "tutor" && (
+            <>
+              <div>
+                <label className="block text-xs text-muted-foreground">姓名（选填）</label>
+                <input value={publishRealName} onChange={(e) => setPublishRealName(e.target.value.slice(0, 10))} maxLength={10} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground">院校 *</label>
+                <input value={publishUniversity} onChange={(e) => setPublishUniversity(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" required />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground">身份</label>
+                <div className="mt-1 flex gap-2">
+                  {IDENTITY_OPTIONS.map(({ value, label }) => (
+                    <button key={value} type="button" onClick={() => setPublishIdentity(value)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishIdentity === value ? "border-primary bg-primary/10 text-primary" : "border-input")}>{label}</button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="block text-xs text-muted-foreground">性别</label>
+            <div className="mt-1 flex gap-2">
+              {["男", "女"].map((g) => (
+                <button key={g} type="button" onClick={() => setPublishGender(g as "男" | "女")} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishGender === g ? "border-primary bg-primary/10 text-primary" : "border-input")}>{g}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground">授课方式</label>
+            <div className="mt-1 flex gap-2">
+              {MODE_OPTIONS.map(({ value, label }) => (
+                <button key={value} type="button" onClick={() => { setPublishMode(value); if (value === "线上") setPublishRegions([]); }} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishMode === value ? "border-primary bg-primary/10 text-primary" : "border-input")}>{label}</button>
+              ))}
+            </div>
+          </div>
+          {publishMode === "合肥线下" && (
+            <div>
+              <label className="block text-xs text-muted-foreground">授课区域（多选）</label>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {HEFEI_AREAS_FULL.map((d) => (
+                  <button key={d} type="button" onClick={() => togglePublishRegion(d)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishRegions.includes(d) ? "border-primary bg-primary/10 text-primary" : "border-input")}>{d}</button>
+                ))}
+              </div>
+            </div>
+          )}
+          {publishType === "demand" && publishMode === "合肥线下" && (
+            <>
+              <div>
+                <label className="block text-xs text-muted-foreground">区域</label>
+                <input value={publishRegion} onChange={(e) => setPublishRegion(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground">详细地址</label>
+                <input value={publishDetailAddress} onChange={(e) => setPublishDetailAddress(e.target.value)} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+              </div>
+            </>
+          )}
+          <div>
+            <label className="block text-xs text-muted-foreground">可授年级 / 学生年级（多选）</label>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {(publishType === "tutor" ? GRADES : GRADES_SHORT).map((g) => (
+                <button key={g} type="button" onClick={() => togglePublishGrade(g)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishGrades.includes(g) ? "border-primary bg-primary/10 text-primary" : "border-input")}>{g}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground">辅导科目（多选）</label>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {SUBJECTS.map((s) => (
+                <button key={s} type="button" onClick={() => togglePublishSubject(s)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishSubjects.includes(s) ? "border-primary bg-primary/10 text-primary" : "border-input")}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-muted-foreground">最低薪资/预算（元/时）</label>
+              <input type="number" value={publishMinSalary} onChange={(e) => setPublishMinSalary(e.target.value.replace(/\D/g, ""))} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs text-muted-foreground">最高薪资/预算（元/时）</label>
+              <input type="number" value={publishMaxSalary} onChange={(e) => setPublishMaxSalary(e.target.value.replace(/\D/g, ""))} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs text-muted-foreground">备注</label>
+            <textarea value={publishNote} onChange={(e) => setPublishNote(e.target.value)} rows={2} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+          </div>
+          <Button type="submit" className="w-full" disabled={publishLoading}>
+            {publishLoading ? "发布中…" : "发布（直接上架）"}
+          </Button>
+        </form>
       )}
 
       {modalImage && (
