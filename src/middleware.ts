@@ -16,8 +16,7 @@ async function verifyAdminSession(token: string | undefined): Promise<boolean> {
 }
 
 /**
- * 极简 CMS 模式：仅保护 /admin（除 /admin/login），只校验 admin_session。
- * 其他所有路径无条件放行，不做任何 Supabase 或用户登录态检查。
+ * 极简：只拦截 /admin（排除 /admin/login），校验 admin_session；其余全部放行。
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -51,9 +50,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/admin",
-    "/admin/:path*",
-    "/api/admin/:path*",
-  ],
+  matcher: ["/admin", "/admin/:path*", "/api/admin/:path*"],
 };

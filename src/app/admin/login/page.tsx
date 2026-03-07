@@ -28,7 +28,6 @@ export default function AdminLoginPage() {
         setLoading(false);
         return;
       }
-      // 整页跳转，确保 Cookie 被带到 /admin/verify，避免中间件误判未登录
       window.location.href = "/admin/verify";
       return;
     } finally {
