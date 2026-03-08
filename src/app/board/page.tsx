@@ -198,7 +198,7 @@ export default function BoardPage() {
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
                         <div className={cn("flex h-12 w-12 items-center justify-center rounded-full bg-muted text-lg font-medium", row.status === "verified" ? "" : "border-2 border-border")}>
-                          {(row.university || "?")[0]}
+                          {(row.real_name || row.university || "?")[0]}
                         </div>
                         {row.status === "verified" && (
                           <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[10px] text-white">✓</span>

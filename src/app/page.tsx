@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import Link from "next/link";
 
-const TUTOR_WECHAT = "Jiajiao-66666";
-const DEMAND_WECHAT = "YEZI-123-126";
+const WECHAT_DEMAND = "YEZI-123-126";
+const WECHAT_TUTOR = "Jiajiao-66666";
 
-function CopyWechat({ wechat, label }: { wechat: string; label: string }) {
+function CopyWechat({ wechat }: { wechat: string }) {
   const [toast, setToast] = useState(false);
   const copy = async () => {
     try {
@@ -19,217 +19,64 @@ function CopyWechat({ wechat, label }: { wechat: string; label: string }) {
     }
   };
   return (
-    <p className="mt-3 border-t border-border pt-3 text-xs text-primary">
-      {label}
+    <span className="inline-flex items-center gap-2">
       <button
         type="button"
         onClick={copy}
-        className="ml-1 font-medium underline underline-offset-2 active:opacity-80"
+        className="font-medium text-[#1e40af] underline underline-offset-2 decoration-[#1e40af]/50 hover:decoration-[#1e40af] active:scale-[0.98] transition"
       >
         {wechat}
       </button>
       {toast && (
-        <span className="ml-2 text-[10px] text-muted-foreground">
-          微信号已复制，请前往微信添加
-        </span>
+        <span className="text-xs text-neutral-500">已复制</span>
       )}
-    </p>
+    </span>
   );
 }
 
-type TutorRow = {
-  id: string;
-  real_name?: string | null;
-  university: string | null;
-  identity: string | null;
-  gender: string | null;
-  teach_mode: string | null;
-  regions: string[] | null;
-  grades: string[] | null;
-  subjects: string[] | null;
-  min_salary: number | null;
-  max_salary: number | null;
-  note?: string | null;
-  created_at: string;
-};
-
-type DemandRow = {
-  id: string;
-  teach_mode: string | null;
-  region: string | null;
-  detail_address: string | null;
-  gender: string | null;
-  subject: string | null;
-  student_grade: string | null;
-  min_salary: number | null;
-  max_salary: number | null;
-  note?: string | null;
-  created_at: string;
-};
-
 export default function HomePage() {
-  const [tab, setTab] = useState<"tutors" | "demands">("tutors");
-  const [tutors, setTutors] = useState<TutorRow[]>([]);
-  const [demands, setDemands] = useState<DemandRow[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchTutors = useCallback(async () => {
-    const res = await fetch("/api/board/tutors");
-    const data = await res.json();
-    if (data.list) setTutors(data.list);
-  }, []);
-
-  const fetchDemands = useCallback(async () => {
-    const res = await fetch("/api/board/demands");
-    const data = await res.json();
-    if (data.list) setDemands(data.list);
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    if (tab === "tutors") fetchTutors().finally(() => setLoading(false));
-    else fetchDemands().finally(() => setLoading(false));
-  }, [tab, fetchTutors, fetchDemands]);
-
   return (
-    <div className="flex flex-col pb-24">
-      <div className="px-4 py-3">
-        <div className="flex rounded-lg bg-muted p-1">
-          <button
-            type="button"
-            onClick={() => setTab("tutors")}
-            className={cn(
-              "flex-1 rounded-md py-2 text-sm font-medium transition",
-              tab === "tutors"
-                ? "bg-background text-primary shadow-sm"
-                : "text-muted-foreground"
-            )}
+    <div className="min-h-[80vh] bg-[#fafafa] flex flex-col items-center justify-center px-6 py-16 text-center">
+      <div className="mx-auto max-w-md space-y-10">
+        <header className="space-y-4">
+          <h1 className="text-2xl font-bold text-neutral-900 leading-snug">
+            你好～欢迎来到
+            <br />
+            <span className="text-[#1e40af]">【合肥学子家教平台】</span>
+          </h1>
+          <p className="text-base text-neutral-600 leading-relaxed">
+            我们专注连接在校大学生与有需要的家庭，提供一对一上门/线上家教辅导。
+          </p>
+        </header>
+
+        <ul className="space-y-4 text-left text-sm text-neutral-700">
+          <li className="flex items-start gap-3">
+            <span className="text-emerald-500 shrink-0 mt-0.5">✅</span>
+            <span>
+              想找家教：请联系 <CopyWechat wechat={WECHAT_DEMAND} />
+            </span>
+          </li>
+          <li className="flex items-start gap-3">
+            <span className="text-emerald-500 shrink-0 mt-0.5">✅</span>
+            <span>
+              想做家教：请联系 <CopyWechat wechat={WECHAT_TUTOR} />
+            </span>
+          </li>
+        </ul>
+
+        <p className="text-sm text-neutral-500 leading-relaxed">
+          看到消息后我们会第一时间回复你。青春相伴，优质辅导。
+        </p>
+
+        <div className="pt-4">
+          <Link
+            href="/board"
+            className="inline-flex items-center justify-center w-full max-w-xs mx-auto py-4 px-6 rounded-xl bg-[#1e3a8a] text-white font-medium text-base shadow-md hover:bg-[#1e40af] active:scale-[0.98] transition focus:outline-none focus:ring-2 focus:ring-[#1e40af] focus:ring-offset-2"
           >
-            找老师
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("demands")}
-            className={cn(
-              "flex-1 rounded-md py-2 text-sm font-medium transition",
-              tab === "demands"
-                ? "bg-background text-primary shadow-sm"
-                : "text-muted-foreground"
-            )}
-          >
-            找学生
-          </button>
+            点击进入 · 信息大厅
+          </Link>
         </div>
       </div>
-
-      <main className="flex-1 px-4 py-4">
-        {loading ? (
-          <div className="flex justify-center py-12">
-            <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          </div>
-        ) : tab === "tutors" ? (
-          tutors.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
-              暂无教员信息
-            </p>
-          ) : (
-            <ul className="space-y-4">
-              {tutors.map((t) => (
-                <li
-                  key={t.id}
-                  className="rounded-xl border border-border bg-card p-4 shadow-sm"
-                >
-                  <div className="space-y-1 text-sm">
-                    {t.real_name && (
-                      <p className="font-medium text-foreground">{t.real_name}</p>
-                    )}
-                    <p className="text-muted-foreground">
-                      {[t.university, t.identity, t.gender]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                    {t.teach_mode && (
-                      <p className="text-muted-foreground">{t.teach_mode.replace(/、/g, " / ")}</p>
-                    )}
-                    {t.regions?.length ? (
-                      <p className="text-muted-foreground">
-                        区域：{t.regions.join("、")}
-                      </p>
-                    ) : null}
-                    {t.grades?.length ? (
-                      <p className="text-muted-foreground">
-                        年级：{t.grades.join("、")}
-                      </p>
-                    ) : null}
-                    {t.subjects?.length ? (
-                      <p className="text-muted-foreground">
-                        科目：{t.subjects.join("、")}
-                      </p>
-                    ) : null}
-                    {(t.min_salary != null || t.max_salary != null) && (
-                      <p className="text-muted-foreground">
-                        薪资：￥{t.min_salary ?? "?"} - {t.max_salary ?? "?"}
-                        /小时
-                      </p>
-                    )}
-                    {t.note && (
-                      <p className="text-muted-foreground">{t.note}</p>
-                    )}
-                  </div>
-                  <CopyWechat wechat={TUTOR_WECHAT} label="老师发布信息请联系微信：" />
-                </li>
-              ))}
-            </ul>
-          )
-        ) : demands.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
-            暂无家长需求
-          </p>
-        ) : (
-          <ul className="space-y-4">
-            {demands.map((d) => (
-              <li
-                key={d.id}
-                className="rounded-xl border border-border bg-card p-4 shadow-sm"
-              >
-                <div className="space-y-1 text-sm">
-                  {d.gender && (
-                    <p className="text-muted-foreground">学生性别：{d.gender}</p>
-                  )}
-                  {d.student_grade && (
-                    <p className="text-muted-foreground">
-                      年级：{d.student_grade}
-                    </p>
-                  )}
-                  {d.teach_mode && (
-                    <p className="text-muted-foreground">{d.teach_mode.replace(/、/g, " / ")}</p>
-                  )}
-                  {d.region && (
-                    <p className="text-muted-foreground">区域：{d.region}</p>
-                  )}
-                  {d.detail_address && (
-                    <p className="text-muted-foreground">
-                      地址：{d.detail_address}
-                    </p>
-                  )}
-                  {d.subject && (
-                    <p className="text-muted-foreground">科目：{d.subject}</p>
-                  )}
-                  {(d.min_salary != null || d.max_salary != null) && (
-                    <p className="text-muted-foreground">
-                      预算：￥{d.min_salary ?? "?"} - {d.max_salary ?? "?"}/小时
-                    </p>
-                  )}
-                  {d.note && (
-                    <p className="text-muted-foreground">{d.note}</p>
-                  )}
-                </div>
-                <CopyWechat wechat={DEMAND_WECHAT} label="家长发布信息请联系微信：" />
-              </li>
-            ))}
-          </ul>
-        )}
-      </main>
     </div>
   );
 }

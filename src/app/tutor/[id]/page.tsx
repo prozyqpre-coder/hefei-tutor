@@ -74,7 +74,7 @@ export default function TutorDetailPage() {
     );
   }
 
-  const maskedName = `${(data.university || "合肥")[0] || "合肥"}老师`;
+  const maskedName = `${(data.real_name || data.university || "合肥")[0] || "合肥"}老师`;
 
   return (
     <div className="px-4 py-6 space-y-4">
