@@ -6,6 +6,40 @@ import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
 
+/** 年级显示顺序：小学（一至六）> 初中（初一至初三）> 高中（高一至高三）；返回 [学段, 段内序号] */
+function gradeSortKey(g: string): [number, number] {
+  const small = ["小学一年级", "小学二年级", "小学三年级", "小学四年级", "小学五年级", "小学六年级", "小一", "小二", "小三", "小四", "小五", "小六"];
+  const mid = ["初一", "初二", "初三"];
+  const high = ["高一", "高二", "高三"];
+  const i = small.indexOf(g); if (i >= 0) return [0, i % 6];
+  const j = mid.indexOf(g); if (j >= 0) return [1, j];
+  const k = high.indexOf(g); if (k >= 0) return [2, k];
+  return [0, 99];
+}
+
+function sortGrades(grades: string[]): string[] {
+  return [...grades].sort((a, b) => {
+    const [ta, sa] = gradeSortKey(a);
+    const [tb, sb] = gradeSortKey(b);
+    if (ta !== tb) return ta - tb;
+    return sa - sb;
+  });
+}
+
+/** 年级所属学段：小学 0 / 初中 1 / 高中 2，用于标签背景色 */
+function gradeTier(g: string): 0 | 1 | 2 {
+  if (/小学|^小[一二三四五六]$/.test(g)) return 0;
+  if (/初一|初二|初三|初中/.test(g)) return 1;
+  if (/高一|高二|高三|高中/.test(g)) return 2;
+  return 0;
+}
+
+const GRADE_TAG_CLASS: Record<0 | 1 | 2, string> = {
+  0: "rounded-md bg-blue-100 px-2 py-0.5 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  1: "rounded-md bg-green-100 px-2 py-0.5 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  2: "rounded-md bg-violet-100 px-2 py-0.5 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+};
+
 type TutorRow = {
   id: string;
   real_name?: string | null;
@@ -225,25 +259,25 @@ export default function BoardPage() {
                           {row.identity && <span>{` · ${row.identity}`}</span>}
                           {row.gender && <span>{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 space-y-2 text-xs leading-relaxed">
+                        <div className="mt-3 space-y-2.5 text-xs leading-relaxed">
                           {row.teach_mode && (
                             <div>
-                              <span className="font-semibold text-gray-700 dark:text-gray-300">模式：</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200">模式：</span>
                               <span className="text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
                             </div>
                           )}
                           {row.regions?.length ? (
                             <div>
-                              <span className="font-semibold text-gray-700 dark:text-gray-300">区域：</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200">区域：</span>
                               <span className="text-gray-500 dark:text-gray-400">{row.regions.join("、")}</span>
                             </div>
                           ) : null}
                           {row.grades?.length ? (
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-gray-700 dark:text-gray-300">年级：</span>
+                            <div className="flex flex-wrap items-center gap-2 leading-relaxed">
+                              <span className="shrink-0 font-bold text-gray-800 dark:text-gray-200">年级：</span>
                               <span className="flex flex-wrap gap-1.5">
-                                {row.grades.map((g) => (
-                                  <span key={g} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                {sortGrades(row.grades).map((g) => (
+                                  <span key={g} className={cn("shrink-0", GRADE_TAG_CLASS[gradeTier(g)])}>
                                     {g}
                                   </span>
                                 ))}
@@ -252,7 +286,7 @@ export default function BoardPage() {
                           ) : null}
                           {row.subjects?.length ? (
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-semibold text-gray-700 dark:text-gray-300">科目：</span>
+                              <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                               <span className="flex flex-wrap gap-1.5">
                                 {row.subjects.map((s) => (
                                   <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
@@ -271,10 +305,10 @@ export default function BoardPage() {
                       </div>
                       {(row.min_salary != null || row.max_salary != null) && (
                         <div className="shrink-0 text-right">
-                          <div className="font-bold text-orange-500 dark:text-orange-400">
+                          <div className="text-base font-bold text-orange-500 dark:text-orange-400">
                             ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
                           </div>
-                          <div className="text-xs text-orange-600/80 dark:text-orange-400/80">/小时</div>
+                          <div className="text-xs text-orange-500/90 dark:text-orange-400/90">/小时</div>
                         </div>
                       )}
                     </div>
@@ -294,36 +328,36 @@ export default function BoardPage() {
                   className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1 space-y-2 text-sm leading-relaxed">
+                    <div className="min-w-0 flex-1 space-y-2.5 text-sm leading-relaxed">
                       {row.teach_mode && (
                         <div>
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">模式：</span>
+                          <span className="font-bold text-gray-800 dark:text-gray-200">模式：</span>
                           <span className="text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
                         </div>
                       )}
                       {(row.region || row.detail_address) && (
                         <div>
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">区域：</span>
+                          <span className="font-bold text-gray-800 dark:text-gray-200">区域：</span>
                           <span className="text-gray-500 dark:text-gray-400">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
                         </div>
                       )}
                       {row.gender && (
                         <div>
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">学生性别：</span>
+                          <span className="font-bold text-gray-800 dark:text-gray-200">学生性别：</span>
                           <span className="text-gray-500 dark:text-gray-400">{row.gender}</span>
                         </div>
                       )}
                       {row.student_grade && (
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">年级：</span>
-                          <span className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                          <span className="font-bold text-gray-800 dark:text-gray-200">年级：</span>
+                          <span className={cn("rounded-md px-2 py-0.5", GRADE_TAG_CLASS[gradeTier(row.student_grade)])}>
                             {row.student_grade}
                           </span>
                         </div>
                       )}
                       {row.subject && (
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">科目：</span>
+                          <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                           <span className="flex flex-wrap gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
                               <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
@@ -341,10 +375,10 @@ export default function BoardPage() {
                     </div>
                     {(row.min_salary != null || row.max_salary != null) && (
                       <div className="shrink-0 text-right">
-                        <div className="font-bold text-orange-500 dark:text-orange-400">
+                        <div className="text-base font-bold text-orange-500 dark:text-orange-400">
                           ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
                         </div>
-                        <div className="text-xs text-orange-600/80 dark:text-orange-400/80">/小时</div>
+                        <div className="text-xs text-orange-500/90 dark:text-orange-400/90">/小时</div>
                       </div>
                     )}
                   </div>

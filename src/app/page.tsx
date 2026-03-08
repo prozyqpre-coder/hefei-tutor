@@ -53,13 +53,13 @@ export default function HomePage() {
           <li className="flex items-start gap-3">
             <span className="text-emerald-500 shrink-0 mt-0.5">✅</span>
             <span>
-              想找家教：请联系 <CopyWechat wechat={WECHAT_DEMAND} />
+              想找家教：请联系微信号 <CopyWechat wechat={WECHAT_DEMAND} />
             </span>
           </li>
           <li className="flex items-start gap-3">
             <span className="text-emerald-500 shrink-0 mt-0.5">✅</span>
             <span>
-              想做家教：请联系 <CopyWechat wechat={WECHAT_TUTOR} />
+              想做家教：请联系微信号 <CopyWechat wechat={WECHAT_TUTOR} />
             </span>
           </li>
         </ul>
