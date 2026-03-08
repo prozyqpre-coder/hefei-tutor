@@ -6,7 +6,6 @@ function getKey(): string | null {
   return v && typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-// 获取所有家长发布的「找学生」信息（支持筛选：区域、年级、科目、模式、薪资）
 export async function GET(request: Request) {
   const key = getKey();
   if (!key) {
@@ -42,7 +41,6 @@ export async function GET(request: Request) {
   return NextResponse.json({ list: data ?? [] });
 }
 
-// 修改家长发布的信息
 export async function PATCH(request: Request) {
   const key = getKey();
   if (!key) {
@@ -72,7 +70,6 @@ export async function PATCH(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-// 删除家长发布的信息
 export async function DELETE(request: Request) {
   const key = getKey();
   if (!key) {
@@ -101,4 +98,3 @@ export async function DELETE(request: Request) {
   }
   return NextResponse.json({ ok: true });
 }
-

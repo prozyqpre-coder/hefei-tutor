@@ -26,7 +26,6 @@ function phaseFromGradeShort(short: string | null): "primary" | "junior" | "seni
   return null;
 }
 
-// 获取所有教员信息（支持筛选：区域、年级、科目、模式、薪资）
 export async function GET(request: Request) {
   const key = getKey();
   if (!key) {
@@ -81,7 +80,6 @@ export async function GET(request: Request) {
   return NextResponse.json({ list });
 }
 
-// 修改教员信息
 export async function PATCH(request: Request) {
   const key = getKey();
   if (!key) {
@@ -113,7 +111,6 @@ export async function PATCH(request: Request) {
   return NextResponse.json({ ok: true });
 }
 
-// 删除教员信息
 export async function DELETE(request: Request) {
   const key = getKey();
   if (!key) {
@@ -144,4 +141,3 @@ export async function DELETE(request: Request) {
   }
   return NextResponse.json({ ok: true });
 }
-

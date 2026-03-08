@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Loader2, XCircle, X, ChevronDown, PenLine } from "lucide-react";
 import { HEFEI_AREAS_FULL, SUBJECTS, GRADES_SHORT, GRADES } from "@/lib/constants";
+import { adminPath, adminApiPath } from "@/lib/admin-path";
 import { cn } from "@/lib/utils";
 
 const MODE_OPTIONS = [
@@ -152,7 +153,7 @@ export default function AdminVerifyPage() {
         body.grades = publishGrades;
         body.subjects = publishSubjects;
       }
-      const res = await fetch("/api/admin/publish", {
+      const res = await fetch(adminApiPath("publish"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -266,7 +267,7 @@ export default function AdminVerifyPage() {
     setSortSavingId(id);
     setError(null);
     try {
-      const res = await fetch("/api/admin/tutor-posts", {
+      const res = await fetch(adminApiPath("tutor-posts"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, update: { sort_order } }),
@@ -285,7 +286,7 @@ export default function AdminVerifyPage() {
     setSortSavingId(id);
     setError(null);
     try {
-      const res = await fetch("/api/admin/demand-posts", {
+      const res = await fetch(adminApiPath("demand-posts"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, update: { sort_order } }),
@@ -304,7 +305,7 @@ export default function AdminVerifyPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/tutor-verify");
+      const res = await fetch(adminApiPath("tutor-verify"));
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setList(data.list || []);
@@ -325,7 +326,7 @@ export default function AdminVerifyPage() {
       if (adminFilters.mode) params.set("mode", adminFilters.mode);
       if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
       if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
-      const res = await fetch(`/api/admin/tutor-posts?${params}`);
+      const res = await fetch(`${adminApiPath("tutor-posts")}?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setAllTutors(data.list || []);
@@ -344,7 +345,7 @@ export default function AdminVerifyPage() {
       if (adminFilters.mode) params.set("mode", adminFilters.mode);
       if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
       if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
-      const res = await fetch(`/api/admin/demand-posts?${params}`);
+      const res = await fetch(`${adminApiPath("demand-posts")}?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setDemands(data.list || []);
@@ -373,7 +374,7 @@ export default function AdminVerifyPage() {
     setError(null);
     setMessage(null);
     try {
-      const res = await fetch("/api/admin/tutor-verify", {
+      const res = await fetch(adminApiPath("tutor-verify"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, action }),
@@ -391,8 +392,8 @@ export default function AdminVerifyPage() {
   }
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.replace("/admin/login");
+    await fetch(adminApiPath("logout"), { method: "POST" });
+    router.replace(adminPath("login"));
     router.refresh();
   }
 
@@ -563,7 +564,7 @@ export default function AdminVerifyPage() {
                         onClick={async () => {
                           if (!window.confirm("确定要删除这条教员信息吗？")) return;
                           try {
-                            const res = await fetch("/api/admin/tutor-posts", {
+                            const res = await fetch(adminApiPath("tutor-posts"), {
                               method: "DELETE",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({ id: row.id }),
@@ -711,7 +712,7 @@ export default function AdminVerifyPage() {
                           onClick={async () => {
                             if (!window.confirm("确定要删除这条教员信息吗？")) return;
                             try {
-                              const res = await fetch("/api/admin/tutor-posts", {
+                              const res = await fetch(adminApiPath("tutor-posts"), {
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ id: t.id }),
@@ -815,7 +816,7 @@ export default function AdminVerifyPage() {
                         onClick={async () => {
                           if (!window.confirm("确定要删除这条「找学生」信息吗？")) return;
                           try {
-                            const res = await fetch("/api/admin/demand-posts", {
+                            const res = await fetch(adminApiPath("demand-posts"), {
                               method: "DELETE",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({ id: d.id }),
@@ -1018,7 +1019,7 @@ export default function AdminVerifyPage() {
                   note: editingTutorNote.trim() || null,
                 };
                 try {
-                  const res = await fetch("/api/admin/tutor-posts", {
+                  const res = await fetch(adminApiPath("tutor-posts"), {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: editingTutor.id, update }),
@@ -1243,7 +1244,7 @@ export default function AdminVerifyPage() {
                   note: editingNote.trim() || null,
                 };
                 try {
-                  const res = await fetch("/api/admin/demand-posts", {
+                  const res = await fetch(adminApiPath("demand-posts"), {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: editingDemand.id, update }),
