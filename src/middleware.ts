@@ -3,7 +3,7 @@ import { jwtVerify } from "jose";
 
 const COOKIE = "admin_session";
 
-/** 后台路径：仅此路径需校验，其余全部放行。勿泄露。 */
+/** 后台路径：仅此路径需校验，其余全部放行。勿泄露。不校验 host/域名，任意域名（含 https://www.hfxz-jj.cn）均可。 */
 const ADMIN_BASE = "yezi-boss-control-888";
 
 function isAdminPage(path: string): boolean {

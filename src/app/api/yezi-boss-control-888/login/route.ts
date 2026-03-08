@@ -54,10 +54,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const isProduction = process.env.NODE_ENV === "production";
+  const isHttps = request.nextUrl?.protocol === "https:";
   const res = NextResponse.json({ ok: true });
   res.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: isProduction || isHttps,
     sameSite: "lax",
     path: "/",
     maxAge: COOKIE_MAX_AGE,

@@ -168,6 +168,7 @@ export default function AdminVerifyPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "发布失败");
@@ -282,6 +283,7 @@ export default function AdminVerifyPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, update: { sort_order } }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "保存失败");
@@ -301,6 +303,7 @@ export default function AdminVerifyPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, update: { sort_order } }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "保存失败");
@@ -316,7 +319,7 @@ export default function AdminVerifyPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(adminApiPath("tutor-verify"));
+      const res = await fetch(adminApiPath("tutor-verify"), { credentials: "same-origin" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setList(data.list || []);
@@ -337,7 +340,7 @@ export default function AdminVerifyPage() {
       if (adminFilters.mode) params.set("mode", adminFilters.mode);
       if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
       if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
-      const res = await fetch(`${adminApiPath("tutor-posts")}?${params}`);
+      const res = await fetch(`${adminApiPath("tutor-posts")}?${params}`, { credentials: "same-origin" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setAllTutors(data.list || []);
@@ -356,7 +359,7 @@ export default function AdminVerifyPage() {
       if (adminFilters.mode) params.set("mode", adminFilters.mode);
       if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
       if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
-      const res = await fetch(`${adminApiPath("demand-posts")}?${params}`);
+      const res = await fetch(`${adminApiPath("demand-posts")}?${params}`, { credentials: "same-origin" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setDemands(data.list || []);
@@ -389,6 +392,7 @@ export default function AdminVerifyPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, action }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "操作失败");
@@ -403,7 +407,7 @@ export default function AdminVerifyPage() {
   }
 
   async function handleLogout() {
-    await fetch(adminApiPath("logout"), { method: "POST" });
+    await fetch(adminApiPath("logout"), { method: "POST", credentials: "same-origin" });
     router.replace(adminPath("login"));
     router.refresh();
   }
@@ -579,6 +583,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ id: row.id }),
+                                credentials: "same-origin",
                               });
                             const data = await res.json();
                             if (!res.ok) throw new Error(data.error || "删除失败");
@@ -727,6 +732,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                                 method: "DELETE",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({ id: t.id }),
+                                credentials: "same-origin",
                               });
                               const data = await res.json();
                               if (!res.ok) throw new Error(data.error || "删除失败");
@@ -831,6 +837,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                               method: "DELETE",
                               headers: { "Content-Type": "application/json" },
                               body: JSON.stringify({ id: d.id }),
+                              credentials: "same-origin",
                             });
                             const data = await res.json();
                             if (!res.ok) throw new Error(data.error || "删除失败");
@@ -1042,6 +1049,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: editingTutor.id, update }),
+                    credentials: "same-origin",
                   });
                   const data = await res.json();
                   if (!res.ok) throw new Error(data.error || "修改失败");
@@ -1268,6 +1276,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: editingDemand.id, update }),
+                    credentials: "same-origin",
                   });
                   const data = await res.json();
                   if (!res.ok) throw new Error(data.error || "修改失败");
