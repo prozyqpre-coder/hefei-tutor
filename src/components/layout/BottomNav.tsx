@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, MessageSquare, User } from "lucide-react";
+import { LayoutGrid, MessageSquare } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "首页", icon: LayoutGrid },
   { href: "/board", label: "信息大厅", icon: MessageSquare },
-  { href: "/contact", label: "联系站长", icon: User },
 ];
 
 export function BottomNav() {

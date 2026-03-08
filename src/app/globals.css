@@ -33,6 +33,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
   }
 }
 

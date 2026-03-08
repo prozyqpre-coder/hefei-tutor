@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Loader2, XCircle, X } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle, X, ChevronDown, PenLine } from "lucide-react";
 import { HEFEI_AREAS_FULL, SUBJECTS, GRADES_SHORT, GRADES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +34,7 @@ type PendingRow = {
   auth_files: string[] | null;
   created_at: string;
   cert_urls: string[];
+  sort_order?: number;
 };
 
 type DemandAdminRow = {
@@ -46,8 +47,9 @@ type DemandAdminRow = {
   student_grade: string | null;
   min_salary: number | null;
   max_salary: number | null;
-   note: string | null;
+  note: string | null;
   created_at: string;
+  sort_order?: number;
 };
 
 export default function AdminVerifyPage() {
@@ -55,12 +57,22 @@ export default function AdminVerifyPage() {
   const [list, setList] = useState<PendingRow[]>([]);
   const [allTutors, setAllTutors] = useState<PendingRow[]>([]);
   const [demands, setDemands] = useState<DemandAdminRow[]>([]);
-  const [tab, setTab] = useState<"tutors" | "demands" | "publish">("tutors");
+  const [tab, setTab] = useState<"tutors" | "demands">("tutors");
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [modalImage, setModalImage] = useState<{ url: string; label: string } | null>(null);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [adminFilters, setAdminFilters] = useState({
+    region: "",
+    grade: "",
+    subject: "",
+    mode: "",
+    min_salary: "",
+    max_salary: "",
+  });
 
   // 教员编辑状态
   const [editingTutor, setEditingTutor] = useState<PendingRow | null>(null);
@@ -161,6 +173,7 @@ export default function AdminVerifyPage() {
       setPublishRegion("");
       setPublishDetailAddress("");
       setPublishNote("");
+      setShowPublishModal(false);
       fetchList();
       fetchAllTutors();
       fetchDemands();
@@ -247,6 +260,46 @@ export default function AdminVerifyPage() {
     setEditingNote("");
   }
 
+  const [sortSavingId, setSortSavingId] = useState<string | null>(null);
+
+  async function saveTutorSortOrder(id: string, sort_order: number) {
+    setSortSavingId(id);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/tutor-posts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, update: { sort_order } }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "保存失败");
+      setAllTutors((prev) => prev.map((t) => (t.id === id ? { ...t, sort_order } : t)));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "保存失败");
+    } finally {
+      setSortSavingId(null);
+    }
+  }
+
+  async function saveDemandSortOrder(id: string, sort_order: number) {
+    setSortSavingId(id);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin/demand-posts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, update: { sort_order } }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "保存失败");
+      setDemands((prev) => prev.map((d) => (d.id === id ? { ...d, sort_order } : d)));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "保存失败");
+    } finally {
+      setSortSavingId(null);
+    }
+  }
+
   const fetchList = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -265,7 +318,14 @@ export default function AdminVerifyPage() {
 
   const fetchAllTutors = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/tutor-posts");
+      const params = new URLSearchParams();
+      if (adminFilters.region) params.set("region", adminFilters.region);
+      if (adminFilters.grade) params.set("grade", adminFilters.grade);
+      if (adminFilters.subject) params.set("subject", adminFilters.subject);
+      if (adminFilters.mode) params.set("mode", adminFilters.mode);
+      if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
+      if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
+      const res = await fetch(`/api/admin/tutor-posts?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setAllTutors(data.list || []);
@@ -273,11 +333,18 @@ export default function AdminVerifyPage() {
       setError(e instanceof Error ? e.message : "加载失败");
       setAllTutors([]);
     }
-  }, []);
+  }, [adminFilters]);
 
   const fetchDemands = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/demand-posts");
+      const params = new URLSearchParams();
+      if (adminFilters.region) params.set("region", adminFilters.region);
+      if (adminFilters.grade) params.set("grade", adminFilters.grade);
+      if (adminFilters.subject) params.set("subject", adminFilters.subject);
+      if (adminFilters.mode) params.set("mode", adminFilters.mode);
+      if (adminFilters.min_salary) params.set("min_salary", adminFilters.min_salary);
+      if (adminFilters.max_salary) params.set("max_salary", adminFilters.max_salary);
+      const res = await fetch(`/api/admin/demand-posts?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "加载失败");
       setDemands(data.list || []);
@@ -285,13 +352,21 @@ export default function AdminVerifyPage() {
       setError(e instanceof Error ? e.message : "加载失败");
       setDemands([]);
     }
-  }, []);
+  }, [adminFilters]);
 
   useEffect(() => {
     fetchList();
     fetchAllTutors();
     fetchDemands();
   }, [fetchList, fetchAllTutors, fetchDemands]);
+
+  useEffect(() => {
+    if (tab === "tutors") {
+      fetchAllTutors();
+    } else {
+      fetchDemands();
+    }
+  }, [adminFilters, tab, fetchAllTutors, fetchDemands]);
 
   async function handleAction(id: string, action: "approve" | "reject") {
     setActingId(id);
@@ -325,14 +400,20 @@ export default function AdminVerifyPage() {
     <div className="mx-auto max-w-2xl px-4 py-8">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-xl font-bold">管理员 · 教员证件审核</h1>
+          <h1 className="text-xl font-bold">管理员 · 管理中心</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            所有申请单的证件大图，通过后显示「实名认证」，打回后显示「未认证」。
+            筛选、审核、手动录入。通过后显示「实名认证」，打回后显示「未认证」。
           </p>
         </div>
-        <Button type="button" variant="ghost" size="sm" onClick={handleLogout}>
-          退出登录
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button type="button" size="sm" className="gap-1" onClick={() => setShowPublishModal(true)}>
+            <PenLine className="h-4 w-4" />
+            手动录入
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={handleLogout}>
+            退出登录
+          </Button>
+        </div>
       </div>
 
       <div className="mt-4 flex gap-2 rounded-full bg-muted p-1 text-xs font-medium">
@@ -356,16 +437,74 @@ export default function AdminVerifyPage() {
         >
           家长需求审核
         </button>
+      </div>
+
+      <div className="mt-3 border border-border rounded-lg px-4 py-2">
         <button
           type="button"
-          onClick={() => setTab("publish")}
-          className={cn(
-            "flex-1 rounded-full px-3 py-1.5",
-            tab === "publish" ? "bg-background text-primary shadow-sm" : "text-muted-foreground"
-          )}
+          onClick={() => setFilterOpen((o) => !o)}
+          className="flex w-full items-center justify-between text-sm text-muted-foreground"
         >
-          发布新信息
+          <span>筛选：区域、年级、科目、模式、薪资</span>
+          <ChevronDown className={cn("h-4 w-4 transition", filterOpen && "rotate-180")} />
         </button>
+        {filterOpen && (
+          <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+            <select
+              value={adminFilters.region}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, region: e.target.value }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            >
+              <option value="">区域</option>
+              {HEFEI_AREAS_FULL.map((a) => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+            <select
+              value={adminFilters.grade}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, grade: e.target.value }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            >
+              <option value="">年级</option>
+              {GRADES_SHORT.map((g) => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+            <select
+              value={adminFilters.subject}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, subject: e.target.value }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            >
+              <option value="">科目</option>
+              {SUBJECTS.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            <select
+              value={adminFilters.mode}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, mode: e.target.value }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            >
+              <option value="">模式</option>
+              <option value="线上">线上</option>
+              <option value="合肥线下">合肥线下</option>
+            </select>
+            <input
+              type="number"
+              placeholder="最低薪资"
+              value={adminFilters.min_salary}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, min_salary: e.target.value.replace(/\D/g, "") }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            />
+            <input
+              type="number"
+              placeholder="最高薪资"
+              value={adminFilters.max_salary}
+              onChange={(e) => setAdminFilters((f) => ({ ...f, max_salary: e.target.value.replace(/\D/g, "") }))}
+              className="rounded-lg border border-input bg-background px-3 py-2"
+            />
+          </div>
+        )}
       </div>
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
@@ -518,6 +657,37 @@ export default function AdminVerifyPage() {
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-muted-foreground">排序</span>
+                        <input
+                          key={`t-${t.id}-${t.sort_order ?? 0}`}
+                          type="number"
+                          className="h-6 w-12 rounded border border-input bg-background px-1 text-center text-[11px]"
+                          defaultValue={t.sort_order ?? 0}
+                          onBlur={(e) => {
+                            const v = parseInt(e.target.value, 10);
+                            if (!Number.isNaN(v)) saveTutorSortOrder(t.id, v);
+                          }}
+                        />
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-1.5 text-[10px]"
+                          disabled={sortSavingId === t.id}
+                          onClick={() => saveTutorSortOrder(t.id, (t.sort_order ?? 0) + 1)}
+                        >
+                          上移
+                        </Button>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-1.5 text-[10px]"
+                          disabled={sortSavingId === t.id}
+                          onClick={() => saveTutorSortOrder(t.id, Math.max(0, (t.sort_order ?? 0) - 1))}
+                        >
+                          下移
+                        </Button>
+                      </div>
                       <Link
                         href={`/tutor/${t.id}`}
                         target="_blank"
@@ -601,6 +771,37 @@ export default function AdminVerifyPage() {
                       </Link>
                     </div>
                     <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] text-muted-foreground">排序</span>
+                        <input
+                          key={`d-${d.id}-${d.sort_order ?? 0}`}
+                          type="number"
+                          className="h-6 w-12 rounded border border-input bg-background px-1 text-center text-[11px]"
+                          defaultValue={d.sort_order ?? 0}
+                          onBlur={(e) => {
+                            const v = parseInt(e.target.value, 10);
+                            if (!Number.isNaN(v)) saveDemandSortOrder(d.id, v);
+                          }}
+                        />
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-1.5 text-[10px]"
+                          disabled={sortSavingId === d.id}
+                          onClick={() => saveDemandSortOrder(d.id, (d.sort_order ?? 0) + 1)}
+                        >
+                          上移
+                        </Button>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-1.5 text-[10px]"
+                          disabled={sortSavingId === d.id}
+                          onClick={() => saveDemandSortOrder(d.id, Math.max(0, (d.sort_order ?? 0) - 1))}
+                        >
+                          下移
+                        </Button>
+                      </div>
                       <Button
                         size="sm"
                         variant="outline"
@@ -638,9 +839,17 @@ export default function AdminVerifyPage() {
         </>
       )}
 
-      {/* 发布新信息 */}
-      {tab === "publish" && (
-        <form onSubmit={handlePublishSubmit} className="mt-6 space-y-4 rounded-xl border border-border bg-card p-4">
+      {/* 手动录入弹窗：完整发布表单 */}
+      {showPublishModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-xl bg-background p-4 shadow-lg">
+            <div className="flex items-center justify-between sticky top-0 bg-background pb-2 border-b border-border">
+              <h3 className="text-base font-semibold">手动录入</h3>
+              <button type="button" onClick={() => setShowPublishModal(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+        <form onSubmit={handlePublishSubmit} className="mt-4 space-y-4">
           <div className="flex gap-2">
             <button
               type="button"
@@ -757,6 +966,8 @@ export default function AdminVerifyPage() {
             {publishLoading ? "发布中…" : "发布（直接上架）"}
           </Button>
         </form>
+          </div>
+        </div>
       )}
 
       {modalImage && (

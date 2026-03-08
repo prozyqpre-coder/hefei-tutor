@@ -6,24 +6,39 @@ function getKey(): string | null {
   return v && typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-// 获取所有家长发布的「找学生」信息
-export async function GET() {
+// 获取所有家长发布的「找学生」信息（支持筛选：区域、年级、科目、模式、薪资）
+export async function GET(request: Request) {
   const key = getKey();
   if (!key) {
     return NextResponse.json({ error: "未配置 SUPABASE_SERVICE_ROLE_KEY" }, { status: 503 });
   }
+  const { searchParams } = new URL(request.url);
+  const region = searchParams.get("region");
+  const grade = searchParams.get("grade");
+  const subject = searchParams.get("subject");
+  const mode = searchParams.get("mode");
+  const minSalary = searchParams.get("min_salary");
+  const maxSalary = searchParams.get("max_salary");
+
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, {
     auth: { persistSession: false },
   });
 
-  const { data, error } = await supabase
+  let q = supabase
     .from("demand_posts")
-    .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, created_at")
+    .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, sort_order, created_at")
+    .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  if (mode) q = q.eq("teach_mode", mode);
+  if (region) q = q.eq("region", region);
+  if (grade) q = q.eq("student_grade", grade);
+  if (subject) q = q.eq("subject", subject);
+  if (minSalary) q = q.gte("min_salary", Number(minSalary));
+  if (maxSalary) q = q.lte("max_salary", Number(maxSalary));
+
+  const { data, error } = await q;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ list: data ?? [] });
 }
 

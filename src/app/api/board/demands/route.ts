@@ -14,6 +14,7 @@ export async function GET(request: Request) {
   let q = supabase
     .from("demand_posts")
     .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, created_at")
+    .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
 
   if (mode) q = q.eq("teach_mode", mode);
