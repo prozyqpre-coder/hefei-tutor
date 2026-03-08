@@ -43,5 +43,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [`/${ADMIN_BASE}`, `/${ADMIN_BASE}/:path*`, `/api/${ADMIN_BASE}/:path*`],
+  matcher: [
+    "/yezi-boss-control-888",
+    "/yezi-boss-control-888/:path*",
+    "/api/yezi-boss-control-888/:path*",
+  ],
 };
