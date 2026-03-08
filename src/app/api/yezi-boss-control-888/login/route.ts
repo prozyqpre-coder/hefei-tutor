@@ -56,7 +56,12 @@ export async function POST(request: NextRequest) {
 
   const isProduction = process.env.NODE_ENV === "production";
   const isHttps = request.nextUrl?.protocol === "https:";
-  const res = NextResponse.json({ ok: true });
+  // 登录成功：返回 JSON 明确包含登录态，并强制设置 Cookie（path=/、SameSite=Lax）
+  const res = NextResponse.json({
+    ok: true,
+    loggedIn: true,
+    role: "admin",
+  });
   res.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: isProduction || isHttps,
