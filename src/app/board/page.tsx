@@ -193,7 +193,7 @@ export default function BoardPage() {
                 <li key={row.id}>
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block rounded-xl border border-border bg-card p-4 shadow-sm"
+                    className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
@@ -219,27 +219,64 @@ export default function BoardPage() {
                             </span>
                           )}
                         </div>
-                        <p className="mt-0.5 text-sm text-muted-foreground">
+                        <p className="mt-1 leading-relaxed text-sm text-muted-foreground">
                           {row.real_name && <span>{row.real_name}</span>}
                           {row.university && <span>{row.real_name ? ` · ${row.university}` : row.university}</span>}
                           {row.identity && <span>{` · ${row.identity}`}</span>}
                           {row.gender && <span>{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          {row.teach_mode && <span>{row.teach_mode.replace(/、/g, " / ")}</span>}
-                          {row.regions?.length ? <span>{row.regions.join("、")}</span> : null}
-                          {row.grades?.length ? <span>年级：{row.grades.join("、")}</span> : null}
-                          {row.subjects?.length ? <span>科目：{row.subjects.join("、")}</span> : null}
-                          {(row.min_salary != null || row.max_salary != null) && (
-                            <span>￥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}/小时</span>
+                        <div className="mt-3 space-y-2 text-xs leading-relaxed">
+                          {row.teach_mode && (
+                            <div>
+                              <span className="font-semibold text-gray-700 dark:text-gray-300">模式：</span>
+                              <span className="text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
+                            </div>
                           )}
+                          {row.regions?.length ? (
+                            <div>
+                              <span className="font-semibold text-gray-700 dark:text-gray-300">区域：</span>
+                              <span className="text-gray-500 dark:text-gray-400">{row.regions.join("、")}</span>
+                            </div>
+                          ) : null}
+                          {row.grades?.length ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-gray-700 dark:text-gray-300">年级：</span>
+                              <span className="flex flex-wrap gap-1.5">
+                                {row.grades.map((g) => (
+                                  <span key={g} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                    {g}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          ) : null}
+                          {row.subjects?.length ? (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-semibold text-gray-700 dark:text-gray-300">科目：</span>
+                              <span className="flex flex-wrap gap-1.5">
+                                {row.subjects.map((s) => (
+                                  <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                    {s}
+                                  </span>
+                                ))}
+                              </span>
+                            </div>
+                          ) : null}
                         </div>
                         {row.note && (
-                          <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                          <p className="mt-3 line-clamp-2 leading-relaxed text-xs text-muted-foreground">
                             {row.note}
                           </p>
                         )}
                       </div>
+                      {(row.min_salary != null || row.max_salary != null) && (
+                        <div className="shrink-0 text-right">
+                          <div className="font-bold text-orange-500 dark:text-orange-400">
+                            ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                          </div>
+                          <div className="text-xs text-orange-600/80 dark:text-orange-400/80">/小时</div>
+                        </div>
+                      )}
                     </div>
                   </Link>
                 </li>
@@ -254,26 +291,61 @@ export default function BoardPage() {
               <li key={row.id}>
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block rounded-xl border border-border bg-card p-4 shadow-sm"
+                  className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
-                  <div className="flex flex-col gap-1 text-sm text-muted-foreground">
-                    <div className="flex flex-wrap gap-x-3 gap-y-1">
-                      <span className="font-medium text-foreground">{row.teach_mode?.replace(/、/g, " / ") ?? ""}</span>
-                      {row.region && <span>{row.region}</span>}
-                      {row.detail_address && <span>{row.detail_address}</span>}
-                    </div>
-                    <div className="flex flex-wrap gap-x-3 gap-y-1">
-                      {row.gender && <span>学生性别：{row.gender}</span>}
-                      {row.student_grade && <span>年级：{row.student_grade}</span>}
-                      {row.subject && <span>科目：{row.subject}</span>}
-                      {(row.min_salary != null || row.max_salary != null) && (
-                        <span>预算：￥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}/小时</span>
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1 space-y-2 text-sm leading-relaxed">
+                      {row.teach_mode && (
+                        <div>
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">模式：</span>
+                          <span className="text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
+                        </div>
+                      )}
+                      {(row.region || row.detail_address) && (
+                        <div>
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">区域：</span>
+                          <span className="text-gray-500 dark:text-gray-400">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
+                        </div>
+                      )}
+                      {row.gender && (
+                        <div>
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">学生性别：</span>
+                          <span className="text-gray-500 dark:text-gray-400">{row.gender}</span>
+                        </div>
+                      )}
+                      {row.student_grade && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">年级：</span>
+                          <span className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                            {row.student_grade}
+                          </span>
+                        </div>
+                      )}
+                      {row.subject && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-gray-700 dark:text-gray-300">科目：</span>
+                          <span className="flex flex-wrap gap-1.5">
+                            {row.subject.split(/[、,，]/).map((s) => (
+                              <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                {s.trim()}
+                              </span>
+                            ))}
+                          </span>
+                        </div>
+                      )}
+                      {row.note && (
+                        <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                          {row.note}
+                        </p>
                       )}
                     </div>
-                    {row.note && (
-                      <p className="mt-1 line-clamp-2 text-xs">
-                        {row.note}
-                      </p>
+                    {(row.min_salary != null || row.max_salary != null) && (
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold text-orange-500 dark:text-orange-400">
+                          ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                        </div>
+                        <div className="text-xs text-orange-600/80 dark:text-orange-400/80">/小时</div>
+                      </div>
                     )}
                   </div>
                 </Link>
