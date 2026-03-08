@@ -12,14 +12,21 @@ function toTextArray(v: unknown): string[] {
   return [];
 }
 
-/** 管理员发布新信息：插入 tutor_posts 或 demand_posts，状态为 verified */
+/** 授课方式多选 → 存为 "线上、合肥线下" 字符串 */
+function toTeachModeString(v: unknown): string | null {
+  const arr = toTextArray(v);
+  if (arr.length === 0) return null;
+  return arr.join("、");
+}
+
+/** 管理员发布新信息：插入 tutor_posts 或 demand_posts，status 固定为 verified，直接首页展示 */
 export async function POST(request: Request) {
   const key = getKey();
   if (!key) {
     return NextResponse.json({ error: "未配置 SUPABASE_SERVICE_ROLE_KEY" }, { status: 503 });
   }
 
-  let body: { type?: string; [k: string]: unknown };
+  let body: { type?: string; teach_mode?: unknown; teach_modes?: unknown; [k: string]: unknown };
   try {
     body = await request.json();
   } catch {
@@ -35,13 +42,19 @@ export async function POST(request: Request) {
     auth: { persistSession: false },
   });
 
+  const teachModeStr = toTeachModeString(body.teach_modes ?? body.teach_mode);
+
   if (type === "tutor") {
+    const university = (body.university as string)?.trim() || "";
+    if (!university) {
+      return NextResponse.json({ error: "请填写院校" }, { status: 400 });
+    }
     const row = {
       real_name: (body.real_name as string)?.trim() || null,
-      university: (body.university as string)?.trim() || "",
+      university,
       identity: (body.identity as string) || null,
       gender: (body.gender as string) || null,
-      teach_mode: (body.teach_mode as string) || null,
+      teach_mode: teachModeStr,
       regions: toTextArray(body.regions),
       grades: toTextArray(body.grades),
       subjects: toTextArray(body.subjects),
@@ -50,6 +63,7 @@ export async function POST(request: Request) {
       note: (body.note as string)?.trim() || null,
       auth_files: [],
       status: "verified",
+      sort_order: 0,
     };
     const { error } = await supabase.from("tutor_posts").insert(row);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -57,7 +71,7 @@ export async function POST(request: Request) {
   }
 
   const row = {
-    teach_mode: (body.teach_mode as string) || null,
+    teach_mode: teachModeStr,
     region: (body.region as string)?.trim() || null,
     detail_address: (body.detail_address as string)?.trim() || null,
     gender: (body.gender as string) || null,
@@ -66,6 +80,7 @@ export async function POST(request: Request) {
     min_salary: body.min_salary != null && Number.isFinite(Number(body.min_salary)) ? Number(body.min_salary) : null,
     max_salary: body.max_salary != null && Number.isFinite(Number(body.max_salary)) ? Number(body.max_salary) : null,
     note: (body.note as string)?.trim() || null,
+    sort_order: 0,
   };
   const { error } = await supabase.from("demand_posts").insert(row);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

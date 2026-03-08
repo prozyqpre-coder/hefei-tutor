@@ -226,7 +226,7 @@ export default function BoardPage() {
                           {row.gender && <span>{` · ${row.gender}`}</span>}
                         </p>
                         <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          {row.teach_mode && <span>{row.teach_mode}</span>}
+                          {row.teach_mode && <span>{row.teach_mode.replace(/、/g, " / ")}</span>}
                           {row.regions?.length ? <span>{row.regions.join("、")}</span> : null}
                           {row.grades?.length ? <span>年级：{row.grades.join("、")}</span> : null}
                           {row.subjects?.length ? <span>科目：{row.subjects.join("、")}</span> : null}
@@ -258,7 +258,7 @@ export default function BoardPage() {
                 >
                   <div className="flex flex-col gap-1 text-sm text-muted-foreground">
                     <div className="flex flex-wrap gap-x-3 gap-y-1">
-                      <span className="font-medium text-foreground">{row.teach_mode}</span>
+                      <span className="font-medium text-foreground">{row.teach_mode?.replace(/、/g, " / ") ?? ""}</span>
                       {row.region && <span>{row.region}</span>}
                       {row.detail_address && <span>{row.detail_address}</span>}
                     </div>

@@ -149,7 +149,7 @@ export default function HomePage() {
                         .join(" · ")}
                     </p>
                     {t.teach_mode && (
-                      <p className="text-muted-foreground">{t.teach_mode}</p>
+                      <p className="text-muted-foreground">{t.teach_mode.replace(/、/g, " / ")}</p>
                     )}
                     {t.regions?.length ? (
                       <p className="text-muted-foreground">
@@ -202,7 +202,7 @@ export default function HomePage() {
                     </p>
                   )}
                   {d.teach_mode && (
-                    <p className="text-muted-foreground">{d.teach_mode}</p>
+                    <p className="text-muted-foreground">{d.teach_mode.replace(/、/g, " / ")}</p>
                   )}
                   {d.region && (
                     <p className="text-muted-foreground">区域：{d.region}</p>

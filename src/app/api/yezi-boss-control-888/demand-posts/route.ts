@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (mode) q = q.eq("teach_mode", mode);
+  if (mode) q = q.ilike("teach_mode", `%${mode}%`);
   if (region) q = q.eq("region", region);
   if (grade) q = q.eq("student_grade", grade);
   if (subject) q = q.eq("subject", subject);

@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (mode) q = q.eq("teach_mode", mode);
+  if (mode) q = q.ilike("teach_mode", `%${mode}%`);
   if (region) q = q.contains("regions", [region]);
   if (minSalary) q = q.gte("min_salary", Number(minSalary));
   if (maxSalary) q = q.lte("max_salary", Number(maxSalary));

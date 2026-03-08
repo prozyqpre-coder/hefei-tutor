@@ -105,7 +105,7 @@ export default function TutorDetailPage() {
       <div className="space-y-2 rounded-xl bg-card p-4 text-sm">
         <div className="flex justify-between gap-2">
           <span className="text-muted-foreground">授课方式</span>
-          <span>{data.teach_mode || "未填写"}</span>
+          <span>{(data.teach_mode && data.teach_mode.replace(/、/g, " / ")) || "未填写"}</span>
         </div>
         <div className="flex justify-between gap-2">
           <span className="text-muted-foreground">授课区域</span>

@@ -81,7 +81,7 @@ export default function AdminVerifyPage() {
   const [editingTutorUniversity, setEditingTutorUniversity] = useState("");
   const [editingTutorIdentity, setEditingTutorIdentity] = useState<"本科生" | "研究生" | "">("");
   const [editingTutorGender, setEditingTutorGender] = useState<"男" | "女" | "">("");
-  const [editingTutorMode, setEditingTutorMode] = useState<"线上" | "合肥线下" | "">("");
+  const [editingTutorModes, setEditingTutorModes] = useState<string[]>([]);
   const [editingTutorRegions, setEditingTutorRegions] = useState<string[]>([]);
   const [editingTutorGrades, setEditingTutorGrades] = useState<string[]>([]);
   const [editingTutorSubjects, setEditingTutorSubjects] = useState<string[]>([]);
@@ -89,7 +89,7 @@ export default function AdminVerifyPage() {
   const [editingTutorMaxSalary, setEditingTutorMaxSalary] = useState("");
   const [editingTutorNote, setEditingTutorNote] = useState("");
   const [editingDemand, setEditingDemand] = useState<DemandAdminRow | null>(null);
-  const [editingMode, setEditingMode] = useState<"线上" | "合肥线下" | "">("");
+  const [editingDemandModes, setEditingDemandModes] = useState<string[]>([]);
   const [editingRegion, setEditingRegion] = useState("");
   const [editingDetailAddress, setEditingDetailAddress] = useState("");
   const [editingGender, setEditingGender] = useState<"男" | "女" | "">("");
@@ -106,7 +106,7 @@ export default function AdminVerifyPage() {
   const [publishUniversity, setPublishUniversity] = useState("");
   const [publishIdentity, setPublishIdentity] = useState<"本科生" | "研究生" | "">("");
   const [publishGender, setPublishGender] = useState<"男" | "女" | "">("");
-  const [publishMode, setPublishMode] = useState<"线上" | "合肥线下" | "">("");
+  const [publishModes, setPublishModes] = useState<string[]>([]);
   const [publishRegions, setPublishRegions] = useState<string[]>([]);
   const [publishGrades, setPublishGrades] = useState<string[]>([]);
   const [publishSubjects, setPublishSubjects] = useState<string[]>([]);
@@ -125,16 +125,27 @@ export default function AdminVerifyPage() {
   function togglePublishSubject(s: string) {
     setPublishSubjects((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
   }
+  function togglePublishMode(m: string) {
+    setPublishModes((prev) => {
+      const next = prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m];
+      if (!next.includes("合肥线下")) setPublishRegions([]);
+      return next;
+    });
+  }
 
   async function handlePublishSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setMessage(null);
+    if (publishType === "tutor" && !publishUniversity.trim()) {
+      setError("请填写院校");
+      return;
+    }
     setPublishLoading(true);
     try {
       const body: Record<string, unknown> = {
         type: publishType,
-        teach_mode: publishMode || null,
+        teach_modes: publishModes.length ? publishModes : null,
         gender: publishGender || null,
         min_salary: publishMinSalary.trim() ? Number(publishMinSalary) : null,
         max_salary: publishMaxSalary.trim() ? Number(publishMaxSalary) : null,
@@ -165,7 +176,7 @@ export default function AdminVerifyPage() {
       setPublishUniversity("");
       setPublishIdentity("");
       setPublishGender("");
-      setPublishMode("");
+      setPublishModes([]);
       setPublishRegions([]);
       setPublishGrades([]);
       setPublishSubjects([]);
@@ -211,7 +222,7 @@ export default function AdminVerifyPage() {
     setEditingTutorUniversity(row.university || "");
     setEditingTutorIdentity((row.identity as "本科生" | "研究生" | null) || "");
     setEditingTutorGender((row.gender as "男" | "女" | null) || "");
-    setEditingTutorMode((row.teach_mode as "线上" | "合肥线下" | null) || "");
+    setEditingTutorModes(row.teach_mode ? row.teach_mode.split("、").filter(Boolean) : []);
     setEditingTutorRegions(row.regions || []);
     setEditingTutorGrades(row.grades || []);
     setEditingTutorSubjects(row.subjects || []);
@@ -226,7 +237,7 @@ export default function AdminVerifyPage() {
     setEditingTutorUniversity("");
     setEditingTutorIdentity("");
     setEditingTutorGender("");
-    setEditingTutorMode("");
+    setEditingTutorModes([]);
     setEditingTutorRegions([]);
     setEditingTutorGrades([]);
     setEditingTutorSubjects([]);
@@ -237,7 +248,7 @@ export default function AdminVerifyPage() {
 
   function openDemandEdit(d: DemandAdminRow) {
     setEditingDemand(d);
-    setEditingMode((d.teach_mode as "线上" | "合肥线下" | null) || "");
+    setEditingDemandModes(d.teach_mode ? d.teach_mode.split("、").filter(Boolean) : []);
     setEditingRegion(d.region || "");
     setEditingDetailAddress(d.detail_address || "");
     setEditingGender((d.gender as "男" | "女" | null) || "");
@@ -250,7 +261,7 @@ export default function AdminVerifyPage() {
 
   function closeDemandEdit() {
     setEditingDemand(null);
-    setEditingMode("");
+    setEditingDemandModes([]);
     setEditingRegion("");
     setEditingDetailAddress("");
     setEditingGender("");
@@ -562,13 +573,13 @@ export default function AdminVerifyPage() {
                         className="gap-1"
                         disabled={!!actingId}
                         onClick={async () => {
-                          if (!window.confirm("确定要删除这条教员信息吗？")) return;
-                          try {
-                            const res = await fetch(adminApiPath("tutor-posts"), {
-                              method: "DELETE",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ id: row.id }),
-                            });
+if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢复。")) return;
+                            try {
+                              const res = await fetch(adminApiPath("tutor-posts"), {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ id: row.id }),
+                              });
                             const data = await res.json();
                             if (!res.ok) throw new Error(data.error || "删除失败");
                             setList((prev) => prev.filter((x) => x.id !== row.id));
@@ -710,7 +721,7 @@ export default function AdminVerifyPage() {
                           variant="destructive"
                           className="h-6 px-2 text-[11px]"
                           onClick={async () => {
-                            if (!window.confirm("确定要删除这条教员信息吗？")) return;
+                            if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢复。")) return;
                             try {
                               const res = await fetch(adminApiPath("tutor-posts"), {
                                 method: "DELETE",
@@ -814,7 +825,7 @@ export default function AdminVerifyPage() {
                         size="sm"
                         variant="destructive"
                         onClick={async () => {
-                          if (!window.confirm("确定要删除这条「找学生」信息吗？")) return;
+                          if (!window.confirm("确定要删除这条「找学生」信息吗？删除后无法恢复。")) return;
                           try {
                             const res = await fetch(adminApiPath("demand-posts"), {
                               method: "DELETE",
@@ -904,14 +915,22 @@ export default function AdminVerifyPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs text-muted-foreground">授课方式</label>
+            <label className="block text-xs text-muted-foreground">授课方式（可多选）</label>
             <div className="mt-1 flex gap-2">
               {MODE_OPTIONS.map(({ value, label }) => (
-                <button key={value} type="button" onClick={() => { setPublishMode(value); if (value === "线上") setPublishRegions([]); }} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishMode === value ? "border-primary bg-primary/10 text-primary" : "border-input")}>{label}</button>
+                <label key={value} className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={publishModes.includes(value)}
+                    onChange={() => togglePublishMode(value)}
+                    className="h-4 w-4 rounded border-input"
+                  />
+                  <span className="text-sm">{label}</span>
+                </label>
               ))}
             </div>
           </div>
-          {publishMode === "合肥线下" && (
+          {publishModes.includes("合肥线下") && (
             <div>
               <label className="block text-xs text-muted-foreground">授课区域（多选）</label>
               <div className="mt-1 flex flex-wrap gap-2">
@@ -921,7 +940,7 @@ export default function AdminVerifyPage() {
               </div>
             </div>
           )}
-          {publishType === "demand" && publishMode === "合肥线下" && (
+          {publishType === "demand" && publishModes.includes("合肥线下") && (
             <>
               <div>
                 <label className="block text-xs text-muted-foreground">区域</label>
@@ -1002,7 +1021,7 @@ export default function AdminVerifyPage() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (!editingTutor) return;
-                const isOffline = editingTutorMode === "合肥线下";
+                const isOffline = editingTutorModes.includes("合肥线下");
                 const min = editingTutorMinSalary.trim() ? Number(editingTutorMinSalary) : null;
                 const max = editingTutorMaxSalary.trim() ? Number(editingTutorMaxSalary) : null;
                 const update: Record<string, unknown> = {
@@ -1010,7 +1029,7 @@ export default function AdminVerifyPage() {
                   university: editingTutorUniversity.trim() || null,
                   identity: editingTutorIdentity || null,
                   gender: editingTutorGender || null,
-                  teach_mode: editingTutorMode || null,
+                  teach_mode: editingTutorModes.length ? editingTutorModes.join("、") : null,
                   regions: isOffline ? editingTutorRegions : [],
                   grades: editingTutorGrades,
                   subjects: editingTutorSubjects,
@@ -1088,27 +1107,28 @@ export default function AdminVerifyPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-muted-foreground">授课方式</label>
+                <label className="block text-xs text-muted-foreground">授课方式（可多选）</label>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {MODE_OPTIONS.map(({ value, label }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => {
-                        setEditingTutorMode(value);
-                        if (value === "线上") setEditingTutorRegions([]);
-                      }}
-                      className={cn(
-                        "rounded-lg border px-3 py-1.5 text-xs",
-                        editingTutorMode === value ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"
-                      )}
-                    >
-                      {label}
-                    </button>
+                    <label key={value} className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editingTutorModes.includes(value)}
+                        onChange={() => {
+                          setEditingTutorModes((prev) => {
+                            const next = prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value];
+                            if (!next.includes("合肥线下")) setEditingTutorRegions([]);
+                            return next;
+                          });
+                        }}
+                        className="h-4 w-4 rounded border-input"
+                      />
+                      <span className="text-sm">{label}</span>
+                    </label>
                   ))}
                 </div>
               </div>
-              {editingTutorMode === "合肥线下" && (
+              {editingTutorModes.includes("合肥线下") && (
                 <div>
                   <label className="block text-xs text-muted-foreground">授课区域（多选）</label>
                   <div className="mt-1 flex flex-wrap gap-2">
@@ -1229,11 +1249,11 @@ export default function AdminVerifyPage() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (!editingDemand) return;
-                const isOffline = editingMode === "合肥线下";
+                const isOffline = editingDemandModes.includes("合肥线下");
                 const min = editingMinSalary.trim() ? Number(editingMinSalary) : null;
                 const max = editingMaxSalary.trim() ? Number(editingMaxSalary) : null;
                 const update: Record<string, unknown> = {
-                  teach_mode: editingMode || null,
+                  teach_mode: editingDemandModes.length ? editingDemandModes.join("、") : null,
                   region: isOffline ? (editingRegion || null) : null,
                   detail_address: isOffline ? (editingDetailAddress.trim() || null) : null,
                   gender: editingGender || null,
@@ -1259,30 +1279,31 @@ export default function AdminVerifyPage() {
               }}
             >
               <div>
-                <label className="block text-xs text-muted-foreground">授课方式</label>
+                <label className="block text-xs text-muted-foreground">授课方式（可多选）</label>
                 <div className="mt-1 flex flex-wrap gap-2">
                   {MODE_OPTIONS.map(({ value, label }) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => {
-                        setEditingMode(value);
-                        if (value === "线上") {
-                          setEditingRegion("");
-                          setEditingDetailAddress("");
-                        }
-                      }}
-                      className={cn(
-                        "rounded-lg border px-3 py-1.5 text-xs",
-                        editingMode === value ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"
-                      )}
-                    >
-                      {label}
-                    </button>
+                    <label key={value} className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={editingDemandModes.includes(value)}
+                        onChange={() => {
+                          setEditingDemandModes((prev) => {
+                            const next = prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value];
+                            if (!next.includes("合肥线下")) {
+                              setEditingRegion("");
+                              setEditingDetailAddress("");
+                            }
+                            return next;
+                          });
+                        }}
+                        className="h-4 w-4 rounded border-input"
+                      />
+                      <span className="text-sm">{label}</span>
+                    </label>
                   ))}
                 </div>
               </div>
-              {editingMode === "合肥线下" && (
+              {editingDemandModes.includes("合肥线下") && (
                 <>
                   <div>
                     <label className="block text-xs text-muted-foreground">授课区域（合肥九区三县）</label>

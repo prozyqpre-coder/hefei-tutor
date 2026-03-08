@@ -79,7 +79,7 @@ export default function DemandDetailPage() {
         <div>
           <h1 className="text-lg font-semibold">{maskedName}</h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            {data.teach_mode || "未填写"}
+            {(data.teach_mode && data.teach_mode.replace(/、/g, " / ")) || "未填写"}
             {data.gender ? ` · 学生性别：${data.gender}` : ""}
             {data.student_grade ? ` · 年级：${data.student_grade}` : ""}
           </p>
