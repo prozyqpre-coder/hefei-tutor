@@ -229,7 +229,7 @@ function BoardPageContent() {
                 <li key={row.id} className="mb-6 last:mb-0">
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block rounded-xl bg-card p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    className="block rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
@@ -261,43 +261,47 @@ function BoardPageContent() {
                           {row.identity && <span className="shrink-0 !whitespace-nowrap">{` · ${row.identity}`}</span>}
                           {row.gender && <span className="shrink-0 !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 space-y-2.5 text-base leading-relaxed">
+                        <div className="mt-3 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
                           {row.teach_mode && (
-                            <div className="flex min-w-0 items-start gap-2">
-                              <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                              <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
-                            </div>
+                            <>
+                              <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
+                              <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                                <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
+                              </span>
+                            </>
                           )}
                           {row.regions?.length ? (
-                            <div className="flex min-w-0 items-start gap-2">
-                              <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                              <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.regions.join("、")}</span>
-                            </div>
-                          ) : null}
+                            <>
+                              <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
+                              <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                                <span className="!whitespace-nowrap">{row.regions.join("、")}</span>
+                              </span>
+                            </>
+                          )}
                           {row.grades?.length ? (
-                            <div className="flex flex-nowrap items-center gap-1 overflow-x-auto leading-relaxed sm:gap-1.5">
+                            <>
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                              <span className="flex flex-nowrap items-center gap-1 sm:gap-1.5">
+                              <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
                                   <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
                                     {g}
                                   </span>
                                 ))}
                               </span>
-                            </div>
-                          ) : null}
+                            </>
+                          )}
                           {row.subjects?.length ? (
-                            <div className="flex flex-nowrap items-center gap-1 sm:gap-1.5">
+                            <>
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                              <span className="flex flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
+                              <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                                 {row.subjects.map((s) => (
                                   <span key={s} className={TEACHER_SUBJECT_TAG_CLASS}>
                                     {s}
                                   </span>
                                 ))}
                               </span>
-                            </div>
-                          ) : null}
+                            </>
+                          )}
                         </div>
                         {row.note && (
                           <p className="mt-3 line-clamp-2 text-base leading-relaxed text-muted-foreground">
@@ -305,12 +309,12 @@ function BoardPageContent() {
                           </p>
                         )}
                         {row.teaching_style != null && String(row.teaching_style).trim() !== "" && (
-                          <div className="mt-3 rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
+                          <div className="mt-3 min-h-0 rounded-lg bg-amber-50 p-3 pb-4 dark:bg-amber-900/20">
                             <p className="flex items-start gap-2 text-sm leading-relaxed">
                               <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
-                              <span>
+                              <span className="min-w-0 flex-1">
                                 <span className="font-bold text-amber-800 dark:text-amber-200">授课风格：</span>
-                                <span className="text-amber-900/90 dark:text-amber-100/90 line-clamp-2">{row.teaching_style.trim()}</span>
+                                <span className="text-amber-900/90 dark:text-amber-100/90">{row.teaching_style.trim()}</span>
                               </span>
                             </p>
                           </div>
@@ -342,47 +346,53 @@ function BoardPageContent() {
               <li key={row.id} className="mb-6 last:mb-0">
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block rounded-xl bg-card p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  className="block rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1 space-y-2.5 text-base leading-relaxed">
+                    <div className="min-w-0 flex-1 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
                       {row.teach_mode && (
-                        <div className="flex min-w-0 items-start gap-2">
-                          <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
-                        </div>
+                        <>
+                          <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
+                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                            <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
+                          </span>
+                        </>
                       )}
                       {(row.region || row.detail_address) && (
-                        <div className="flex min-w-0 items-start gap-2">
-                          <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
-                        </div>
+                        <>
+                          <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
+                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                            <span className="!whitespace-nowrap">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
+                          </span>
+                        </>
                       )}
                       {row.gender && (
-                        <div className="flex min-w-0 items-start gap-2">
-                          <span className="shrink-0 w-20 text-base font-bold text-gray-800 dark:text-gray-200">学生性别：</span>
-                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.gender}</span>
-                        </div>
+                        <>
+                          <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">性别：</span>
+                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                            <span className="!whitespace-nowrap">{row.gender}</span>
+                          </span>
+                        </>
                       )}
                       {row.student_grade && (
-                        <div className="flex flex-nowrap items-center gap-1 sm:gap-1.5">
+                        <>
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
                           <span className={DEMAND_GRADE_TAG_CLASS}>
                             {row.student_grade}
                           </span>
-                        </div>
+                        </>
                       )}
                       {row.subject && (
-                        <div className="flex flex-nowrap items-center gap-1 sm:gap-1.5">
+                        <>
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                          <span className="flex flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
+                          <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
                               <span key={s} className={DEMAND_SUBJECT_TAG_CLASS}>
                                 {s.trim()}
                               </span>
                             ))}
                           </span>
-                        </div>
+                        </>
                       )}
                       {row.note && (
                         <p className="mt-2 line-clamp-2 text-base text-muted-foreground">
