@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS } from "@/lib/constants";
@@ -61,7 +61,7 @@ type DemandRow = {
 
 const MODES = ["线上", "合肥线下"] as const;
 
-export default function BoardPage() {
+function BoardPageContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
   const initialTab = tabParam === "demands" ? "demands" : "tutors";
@@ -400,5 +400,13 @@ export default function BoardPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BoardPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center px-4 text-sm text-muted-foreground">加载中…</div>}>
+      <BoardPageContent />
+    </Suspense>
   );
 }
