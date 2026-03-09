@@ -117,7 +117,7 @@ function BoardPageContent() {
       <div className="sticky top-[57px] z-30 border-b border-border bg-background">
         <div className="border-b border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
           <p>（家长）想找家教请微信联系 {WECHAT_DEMAND}</p>
-          <p className="mt-1">（教员）想做家教 {WECHAT_TUTOR}</p>
+          <p className="mt-1">（教员）想做家教请微信联系 {WECHAT_TUTOR}</p>
         </div>
         <div className="flex">
           <button
