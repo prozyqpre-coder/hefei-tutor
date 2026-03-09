@@ -9,21 +9,21 @@ import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
 
-/** 教师卡片年级标签：浅紫背景，不加粗 */
+/** 教师卡片年级标签：浅紫背景，不换行，紧凑 */
 const TEACHER_GRADE_TAG_CLASS =
-  "inline-flex items-center rounded-md bg-purple-50 px-3 py-1 text-purple-600 dark:bg-purple-100/50 dark:text-purple-700 mx-1";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-2 py-1 text-purple-600 tracking-tighter whitespace-nowrap dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
 
-/** 教师卡片科目标签：浅蓝背景，不加粗 */
+/** 教师卡片科目标签：浅蓝背景，不换行，紧凑 */
 const TEACHER_SUBJECT_TAG_CLASS =
-  "inline-flex items-center rounded-md bg-blue-50 px-3 py-1 text-blue-600 dark:bg-blue-100/50 dark:text-blue-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-2 py-1 text-blue-600 tracking-tighter whitespace-nowrap dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
 
-/** 找学生卡片年级标签：浅紫背景，不加粗 */
+/** 找学生卡片年级标签：浅紫背景，不换行，紧凑 */
 const DEMAND_GRADE_TAG_CLASS =
-  "inline-flex items-center rounded-md bg-purple-50 px-3 py-1 text-purple-600 dark:bg-purple-100/50 dark:text-purple-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-2 py-1 text-purple-600 tracking-tighter whitespace-nowrap dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
 
-/** 找学生卡片科目标签：浅蓝背景，不加粗 */
+/** 找学生卡片科目标签：浅蓝背景，不换行，紧凑 */
 const DEMAND_SUBJECT_TAG_CLASS =
-  "inline-flex items-center rounded-md bg-blue-50 px-3 py-1 text-blue-600 dark:bg-blue-100/50 dark:text-blue-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-2 py-1 text-blue-600 tracking-tighter whitespace-nowrap dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
 
 type TutorRow = {
   id: string;
@@ -242,24 +242,24 @@ function BoardPageContent() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-xl font-bold">
+                          <span className="shrink-0 whitespace-nowrap text-xl font-bold">
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
                           {row.status === "verified" ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 dark:text-amber-400">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 whitespace-nowrap dark:text-amber-400">
                               <ShieldCheck className="h-3.5 w-3.5" /> 实名认证
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground whitespace-nowrap">
                               <ShieldAlert className="h-3.5 w-3.5" /> 未认证
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 text-base leading-relaxed text-muted-foreground">
-                          {row.real_name && <span>{row.real_name}</span>}
-                          {row.university && <span>{row.real_name ? ` · ${row.university}` : row.university}</span>}
-                          {row.identity && <span>{` · ${row.identity}`}</span>}
-                          {row.gender && <span>{` · ${row.gender}`}</span>}
+                        <p className="mt-1 flex flex-wrap items-center gap-x-1 text-base leading-relaxed text-muted-foreground">
+                          {row.real_name && <span className="shrink-0 whitespace-nowrap">{row.real_name}</span>}
+                          {row.university && <span className="shrink-0 whitespace-nowrap">{row.real_name ? ` · ${row.university}` : row.university}</span>}
+                          {row.identity && <span className="shrink-0 whitespace-nowrap">{` · ${row.identity}`}</span>}
+                          {row.gender && <span className="shrink-0 whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
                         <div className="mt-3 space-y-2.5 text-base leading-relaxed">
                           {row.teach_mode && (
@@ -275,9 +275,9 @@ function BoardPageContent() {
                             </div>
                           ) : null}
                           {row.grades?.length ? (
-                            <div className="flex flex-wrap items-center gap-2 leading-relaxed">
+                            <div className="flex flex-wrap items-center gap-1.5 leading-relaxed">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                              <span className="flex flex-wrap items-center -mx-1">
+                              <span className="flex flex-wrap items-center gap-1.5">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
                                   <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
                                     {g}
@@ -287,9 +287,9 @@ function BoardPageContent() {
                             </div>
                           ) : null}
                           {row.subjects?.length ? (
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                              <span className="flex flex-wrap gap-1.5">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
+                              <span className="flex flex-wrap items-center gap-1.5">
                                 {row.subjects.map((s) => (
                                   <span key={s} className={TEACHER_SUBJECT_TAG_CLASS}>
                                     {s}
@@ -361,17 +361,17 @@ function BoardPageContent() {
                         </div>
                       )}
                       {row.student_grade && (
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
                           <span className={DEMAND_GRADE_TAG_CLASS}>
                             {row.student_grade}
                           </span>
                         </div>
                       )}
                       {row.subject && (
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                          <span className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
+                          <span className="flex flex-wrap items-center gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
                               <span key={s} className={DEMAND_SUBJECT_TAG_CLASS}>
                                 {s.trim()}
