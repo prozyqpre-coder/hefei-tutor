@@ -7,7 +7,7 @@ import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS } from 
 import { WECHAT_DEMAND, WECHAT_TUTOR } from "@/lib/wechat";
 import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
+import { ShieldCheck, ShieldAlert, ChevronDown, ChevronRight } from "lucide-react";
 
 /** 教师卡片年级标签：浅紫背景，强制不换行，窄屏 text-sm + 紧凑间距 */
 const TEACHER_GRADE_TAG_CLASS =
@@ -265,13 +265,13 @@ function BoardPageContent() {
                           {row.teach_mode && (
                             <div className="flex min-w-0 items-start gap-2">
                               <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                              <span className="min-w-0 flex-1 truncate text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
+                              <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
                             </div>
                           )}
                           {row.regions?.length ? (
                             <div className="flex min-w-0 items-start gap-2">
                               <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                              <span className="min-w-0 flex-1 truncate text-gray-500 dark:text-gray-400">{row.regions.join("、")}</span>
+                              <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.regions.join("、")}</span>
                             </div>
                           ) : null}
                           {row.grades?.length ? (
@@ -315,6 +315,10 @@ function BoardPageContent() {
                             </p>
                           </div>
                         )}
+                        <p className="mt-3 flex items-center gap-1 text-sm text-primary">
+                          <span>点开查看更多信息</span>
+                          <ChevronRight className="h-4 w-4" />
+                        </p>
                       </div>
                       {(row.min_salary != null || row.max_salary != null) && (
                         <div className="shrink-0 text-right">
@@ -345,19 +349,19 @@ function BoardPageContent() {
                       {row.teach_mode && (
                         <div className="flex min-w-0 items-start gap-2">
                           <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                          <span className="min-w-0 flex-1 truncate text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
+                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.teach_mode.replace(/、/g, " / ")}</span>
                         </div>
                       )}
                       {(row.region || row.detail_address) && (
                         <div className="flex min-w-0 items-start gap-2">
                           <span className="shrink-0 w-14 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                          <span className="min-w-0 flex-1 truncate text-gray-500 dark:text-gray-400">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
+                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
                         </div>
                       )}
                       {row.gender && (
                         <div className="flex min-w-0 items-start gap-2">
                           <span className="shrink-0 w-20 text-base font-bold text-gray-800 dark:text-gray-200">学生性别：</span>
-                          <span className="min-w-0 flex-1 truncate text-gray-500 dark:text-gray-400">{row.gender}</span>
+                          <span className="min-w-0 flex-1 break-words text-gray-500 dark:text-gray-400">{row.gender}</span>
                         </div>
                       )}
                       {row.student_grade && (
@@ -385,6 +389,10 @@ function BoardPageContent() {
                           {row.note}
                         </p>
                       )}
+                      <p className="mt-3 flex items-center gap-1 text-sm text-primary">
+                        <span>点开查看更多信息</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </p>
                     </div>
                     {(row.min_salary != null || row.max_salary != null) && (
                       <div className="shrink-0 text-right">
