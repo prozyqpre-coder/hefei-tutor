@@ -9,21 +9,21 @@ import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown, ChevronRight } from "lucide-react";
 
-/** 教师卡片年级标签：浅紫背景，强制不换行，窄屏 text-sm + 紧凑间距 */
+/** 教师卡片年级标签：强制不换行不截断，宁可超出边界 */
 const TEACHER_GRADE_TAG_CLASS =
-  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-1.5 py-1 text-sm text-purple-600 tracking-tighter !whitespace-nowrap sm:px-2 sm:text-base dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-1.5 py-1 text-sm text-purple-600 tracking-tighter overflow-visible !whitespace-nowrap sm:px-2 sm:text-base dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
 
-/** 教师卡片科目标签：浅蓝背景，强制不换行，窄屏 text-sm + 紧凑间距 */
+/** 教师卡片科目标签：强制不换行不截断，宁可超出边界 */
 const TEACHER_SUBJECT_TAG_CLASS =
-  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-1.5 py-1 text-sm text-blue-600 tracking-tighter !whitespace-nowrap sm:px-2 sm:text-base dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-1.5 py-1 text-sm text-blue-600 tracking-tighter overflow-visible !whitespace-nowrap sm:px-2 sm:text-base dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
 
-/** 找学生卡片年级标签：浅紫背景，强制不换行，窄屏 text-sm + 紧凑间距 */
+/** 找学生卡片年级标签：强制不换行不截断 */
 const DEMAND_GRADE_TAG_CLASS =
-  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-1.5 py-1 text-sm text-purple-600 tracking-tighter !whitespace-nowrap sm:px-2 sm:text-base dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-purple-200 bg-purple-50 px-1.5 py-1 text-sm text-purple-600 tracking-tighter overflow-visible !whitespace-nowrap sm:px-2 sm:text-base dark:border-purple-300/50 dark:bg-purple-100/50 dark:text-purple-700";
 
-/** 找学生卡片科目标签：浅蓝背景，强制不换行，窄屏 text-sm + 紧凑间距 */
+/** 找学生卡片科目标签：强制不换行不截断 */
 const DEMAND_SUBJECT_TAG_CLASS =
-  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-1.5 py-1 text-sm text-blue-600 tracking-tighter !whitespace-nowrap sm:px-2 sm:text-base dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
+  "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-1.5 py-1 text-sm text-blue-600 tracking-tighter overflow-visible !whitespace-nowrap sm:px-2 sm:text-base dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
 
 type TutorRow = {
   id: string;
@@ -246,26 +246,26 @@ function BoardPageContent() {
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
                           {row.status === "verified" ? (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 whitespace-nowrap dark:text-amber-400">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 overflow-visible !whitespace-nowrap dark:text-amber-400">
                               <ShieldCheck className="h-3.5 w-3.5" /> 实名认证
                             </span>
                           ) : (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground whitespace-nowrap">
+                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground overflow-visible !whitespace-nowrap">
                               <ShieldAlert className="h-3.5 w-3.5" /> 未认证
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 flex flex-nowrap items-center gap-x-1 overflow-x-auto text-base leading-relaxed text-muted-foreground">
-                          {row.real_name && <span className="shrink-0 !whitespace-nowrap">{row.real_name}</span>}
-                          {row.university && <span className="shrink-0 !whitespace-nowrap">{row.real_name ? ` · ${row.university}` : row.university}</span>}
-                          {row.identity && <span className="shrink-0 !whitespace-nowrap">{` · ${row.identity}`}</span>}
-                          {row.gender && <span className="shrink-0 !whitespace-nowrap">{` · ${row.gender}`}</span>}
+                        <p className="mt-1 flex flex-nowrap items-center gap-x-1 overflow-visible text-base leading-relaxed text-muted-foreground">
+                          {row.real_name && <span className="shrink-0 overflow-visible !whitespace-nowrap">{row.real_name}</span>}
+                          {row.university && <span className="shrink-0 overflow-visible !whitespace-nowrap">{row.real_name ? ` · ${row.university}` : row.university}</span>}
+                          {row.identity && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.identity}`}</span>}
+                          {row.gender && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                        <div className="mt-3 grid grid-cols-[3.5rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
                           {row.teach_mode ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                              <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                              <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
                                 <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
                               </span>
                             </div>
@@ -273,7 +273,7 @@ function BoardPageContent() {
                           {row.regions && row.regions.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                              <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                              <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
                                 <span className="!whitespace-nowrap">{row.regions.join("、")}</span>
                               </span>
                             </div>
@@ -281,7 +281,7 @@ function BoardPageContent() {
                           {row.grades && row.grades.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                              <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
+                              <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
                                   <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
                                     {g}
@@ -293,7 +293,7 @@ function BoardPageContent() {
                           {row.subjects && row.subjects.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                              <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
+                              <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
                                 {row.subjects.map((s) => (
                                   <span key={s} className={TEACHER_SUBJECT_TAG_CLASS}>
                                     {s}
@@ -309,10 +309,10 @@ function BoardPageContent() {
                           </p>
                         )}
                         {row.teaching_style != null && String(row.teaching_style).trim() !== "" && (
-                          <div className="mt-3 min-h-0 rounded-lg bg-amber-50 p-3 pb-4 dark:bg-amber-900/20">
+                          <div className="mt-3 rounded-lg bg-amber-50 p-3 pb-4 dark:bg-amber-900/20">
                             <p className="flex items-start gap-2 text-sm leading-relaxed">
                               <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
-                              <span className="min-w-0 flex-1">
+                              <span className="min-w-0 flex-1 overflow-visible">
                                 <span className="font-bold text-amber-800 dark:text-amber-200">授课风格：</span>
                                 <span className="text-amber-900/90 dark:text-amber-100/90">{row.teaching_style.trim()}</span>
                               </span>
@@ -349,11 +349,11 @@ function BoardPageContent() {
                   className="block rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                    <div className="min-w-0 flex-1 grid grid-cols-[3.5rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
                       {row.teach_mode ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
                           </span>
                         </div>
@@ -361,7 +361,7 @@ function BoardPageContent() {
                       {(row.region || row.detail_address) ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
                           </span>
                         </div>
@@ -369,7 +369,7 @@ function BoardPageContent() {
                       {row.gender ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">性别：</span>
-                          <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
+                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{row.gender}</span>
                           </span>
                         </div>
@@ -385,7 +385,7 @@ function BoardPageContent() {
                       {row.subject ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                          <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
+                          <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
                             {row.subject.split(/[、,，]/).map((s) => (
                               <span key={s} className={DEMAND_SUBJECT_TAG_CLASS}>
                                 {s.trim()}
