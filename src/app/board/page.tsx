@@ -262,24 +262,24 @@ function BoardPageContent() {
                           {row.gender && <span className="shrink-0 !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
                         <div className="mt-3 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
-                          {row.teach_mode && (
-                            <>
+                          {row.teach_mode ? (
+                            <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
                               <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
                                 <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
                               </span>
-                            </>
-                          )}
-                          {row.regions?.length ? (
-                            <>
+                            </div>
+                          ) : null}
+                          {row.regions && row.regions.length > 0 ? (
+                            <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
                               <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
                                 <span className="!whitespace-nowrap">{row.regions.join("、")}</span>
                               </span>
-                            </>
-                          )}
-                          {row.grades?.length ? (
-                            <>
+                            </div>
+                          ) : null}
+                          {row.grades && row.grades.length > 0 ? (
+                            <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
                               <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
@@ -288,10 +288,10 @@ function BoardPageContent() {
                                   </span>
                                 ))}
                               </span>
-                            </>
-                          )}
-                          {row.subjects?.length ? (
-                            <>
+                            </div>
+                          ) : null}
+                          {row.subjects && row.subjects.length > 0 ? (
+                            <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
                               <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                                 {row.subjects.map((s) => (
@@ -300,8 +300,8 @@ function BoardPageContent() {
                                   </span>
                                 ))}
                               </span>
-                            </>
-                          )}
+                            </div>
+                          ) : null}
                         </div>
                         {row.note && (
                           <p className="mt-3 line-clamp-2 text-base leading-relaxed text-muted-foreground">
@@ -350,40 +350,40 @@ function BoardPageContent() {
                 >
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1 grid grid-cols-[3.8rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
-                      {row.teach_mode && (
-                        <>
+                      {row.teach_mode ? (
+                        <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
                           <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
                           </span>
-                        </>
-                      )}
-                      {(row.region || row.detail_address) && (
-                        <>
+                        </div>
+                      ) : null}
+                      {(row.region || row.detail_address) ? (
+                        <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
                           <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
                           </span>
-                        </>
-                      )}
-                      {row.gender && (
-                        <>
+                        </div>
+                      ) : null}
+                      {row.gender ? (
+                        <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">性别：</span>
                           <span className="min-w-0 overflow-x-auto text-gray-500 dark:text-gray-400">
                             <span className="!whitespace-nowrap">{row.gender}</span>
                           </span>
-                        </>
-                      )}
-                      {row.student_grade && (
-                        <>
+                        </div>
+                      ) : null}
+                      {row.student_grade ? (
+                        <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
                           <span className={DEMAND_GRADE_TAG_CLASS}>
                             {row.student_grade}
                           </span>
-                        </>
-                      )}
-                      {row.subject && (
-                        <>
+                        </div>
+                      ) : null}
+                      {row.subject ? (
+                        <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
                           <span className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto sm:gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
@@ -392,8 +392,8 @@ function BoardPageContent() {
                               </span>
                             ))}
                           </span>
-                        </>
-                      )}
+                        </div>
+                      ) : null}
                       {row.note && (
                         <p className="mt-2 line-clamp-2 text-base text-muted-foreground">
                           {row.note}
