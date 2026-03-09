@@ -229,8 +229,16 @@ function BoardPageContent() {
                 <li key={row.id} className="mb-6 last:mb-0">
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
+                    {(row.min_salary != null || row.max_salary != null) && (
+                      <div className="absolute right-3 top-4 z-10 text-right">
+                        <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
+                          ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                        </div>
+                        <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                      </div>
+                    )}
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
                         <div className={cn("flex h-12 w-12 items-center justify-center rounded-full bg-muted text-lg font-medium", row.status === "verified" ? "" : "border-2 border-border")}>
@@ -241,7 +249,7 @@ function BoardPageContent() {
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="pr-[8rem] flex flex-wrap items-center gap-2">
                           <span className="shrink-0 text-xl font-bold !whitespace-nowrap">
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
@@ -324,14 +332,6 @@ function BoardPageContent() {
                           <ChevronRight className="h-4 w-4" />
                         </p>
                       </div>
-                      {(row.min_salary != null || row.max_salary != null) && (
-                        <div className="shrink-0 w-[7.5rem] min-w-[7.5rem] text-right">
-                          <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
-                            ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
-                          </div>
-                          <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
-                        </div>
-                      )}
                     </div>
                   </Link>
                 </li>
@@ -346,9 +346,17 @@ function BoardPageContent() {
               <li key={row.id} className="mb-6 last:mb-0">
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
-                  <div className="flex items-start gap-3">
+                  {(row.min_salary != null || row.max_salary != null) && (
+                    <div className="absolute right-3 top-4 z-10 text-right">
+                      <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
+                        ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                      </div>
+                      <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-3 pr-[7.5rem]">
                     <div className="min-w-0 flex-1 grid grid-cols-[4rem_1fr] items-start gap-x-1 gap-y-2.5 text-base leading-relaxed">
                       {row.teach_mode ? (
                         <div className="contents">
@@ -404,14 +412,6 @@ function BoardPageContent() {
                         <ChevronRight className="h-4 w-4" />
                       </p>
                     </div>
-                    {(row.min_salary != null || row.max_salary != null) && (
-                      <div className="shrink-0 w-[7.5rem] min-w-[7.5rem] text-right">
-                        <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
-                          ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
-                        </div>
-                        <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
-                      </div>
-                    )}
                   </div>
                 </Link>
               </li>
