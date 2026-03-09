@@ -9,24 +9,21 @@ import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
 
-/** 年级所属学段（找学生卡片用）：小学 0 / 初中 1 / 高中 2 */
-function gradeTier(g: string): 0 | 1 | 2 {
-  if (/小学|^小[一二三四五六]$/.test(g)) return 0;
-  if (/初一|初二|初三|初中/.test(g)) return 1;
-  if (/高一|高二|高三|高中/.test(g)) return 2;
-  return 0;
-}
-
-/** 教师卡片年级标签：深蓝底白字，高对比度，py-2 加大高度 */
+/** 教师卡片年级标签：浅紫背景，不加粗 */
 const TEACHER_GRADE_TAG_CLASS =
-  "inline-flex min-h-[36px] min-w-[2.5rem] items-center justify-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800 mx-1";
+  "inline-flex items-center rounded-md bg-purple-50 px-3 py-1 text-purple-600 dark:bg-purple-100/50 dark:text-purple-700 mx-1";
 
-/** 找学生卡片年级标签：深色背景白字，高对比度 */
-const DEMAND_GRADE_TAG_CLASS: Record<0 | 1 | 2, string> = {
-  0: "inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800",
-  1: "inline-flex min-h-[36px] items-center rounded-md bg-green-700 px-3 py-2 font-medium text-white dark:bg-green-800",
-  2: "inline-flex min-h-[36px] items-center rounded-md bg-violet-700 px-3 py-2 font-medium text-white dark:bg-violet-800",
-};
+/** 教师卡片科目标签：浅蓝背景，不加粗 */
+const TEACHER_SUBJECT_TAG_CLASS =
+  "inline-flex items-center rounded-md bg-blue-50 px-3 py-1 text-blue-600 dark:bg-blue-100/50 dark:text-blue-700";
+
+/** 找学生卡片年级标签：浅紫背景，不加粗 */
+const DEMAND_GRADE_TAG_CLASS =
+  "inline-flex items-center rounded-md bg-purple-50 px-3 py-1 text-purple-600 dark:bg-purple-100/50 dark:text-purple-700";
+
+/** 找学生卡片科目标签：浅蓝背景，不加粗 */
+const DEMAND_SUBJECT_TAG_CLASS =
+  "inline-flex items-center rounded-md bg-blue-50 px-3 py-1 text-blue-600 dark:bg-blue-100/50 dark:text-blue-700";
 
 type TutorRow = {
   id: string;
@@ -232,7 +229,7 @@ function BoardPageContent() {
                 <li key={row.id} className="mb-6 last:mb-0">
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block rounded-xl border border-border bg-card p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
+                    className="block rounded-xl bg-card p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
@@ -279,7 +276,7 @@ function BoardPageContent() {
                           ) : null}
                           {row.grades?.length ? (
                             <div className="flex flex-wrap items-center gap-2 leading-relaxed">
-                              <span className="shrink-0 font-bold text-gray-800 dark:text-gray-200">年级：</span>
+                              <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
                               <span className="flex flex-wrap items-center -mx-1">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
                                   <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
@@ -291,10 +288,10 @@ function BoardPageContent() {
                           ) : null}
                           {row.subjects?.length ? (
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
+                              <span className="text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
                               <span className="flex flex-wrap gap-1.5">
                                 {row.subjects.map((s) => (
-                                  <span key={s} className="inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800">
+                                  <span key={s} className={TEACHER_SUBJECT_TAG_CLASS}>
                                     {s}
                                   </span>
                                 ))}
@@ -341,7 +338,7 @@ function BoardPageContent() {
               <li key={row.id} className="mb-6 last:mb-0">
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block rounded-xl border border-border bg-card p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
+                  className="block rounded-xl bg-card p-5 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1 space-y-2.5 text-base leading-relaxed">
@@ -365,18 +362,18 @@ function BoardPageContent() {
                       )}
                       {row.student_grade && (
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                          <span className={DEMAND_GRADE_TAG_CLASS[gradeTier(row.student_grade)]}>
+                          <span className="text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
+                          <span className={DEMAND_GRADE_TAG_CLASS}>
                             {row.student_grade}
                           </span>
                         </div>
                       )}
                       {row.subject && (
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
+                          <span className="text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
                           <span className="flex flex-wrap gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
-                              <span key={s} className="inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800">
+                              <span key={s} className={DEMAND_SUBJECT_TAG_CLASS}>
                                 {s.trim()}
                               </span>
                             ))}
