@@ -7,7 +7,7 @@ import { teacherGradesForDisplay } from "@/lib/grades";
 import { WECHAT_DEMAND } from "@/lib/wechat";
 import { Button } from "@/components/ui/button";
 import { WechatContactButton } from "@/components/WechatContactButton";
-import { ShieldCheck, ShieldAlert } from "lucide-react";
+import { ShieldCheck, ShieldAlert, Mail } from "lucide-react";
 
 type TutorDetail = {
   id: string;
@@ -151,6 +151,15 @@ export default function TutorDetailPage() {
           </p>
         </div>
       )}
+
+      <div className="flex flex-col items-center justify-center gap-2 rounded-xl bg-sky-50 px-4 py-4 text-center text-sm dark:bg-sky-900/20">
+        <Mail className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+        <p className="font-medium text-sky-800 dark:text-sky-200">
+          觉得这位老师不错，请将名字发送给微信号 <span className="font-semibold">{WECHAT_DEMAND}</span>，我们为您对接
+        </p>
+      </div>
+
+      <div className="h-20" />
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 px-4 py-3">
         <WechatContactButton wechat={WECHAT_DEMAND} />

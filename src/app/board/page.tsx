@@ -250,7 +250,7 @@ function BoardPageContent() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="shrink-0 whitespace-nowrap text-xl font-bold">
+                          <span className="shrink-0 text-xl font-bold !whitespace-nowrap">
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
                           {row.status === "verified" ? (
@@ -269,12 +269,12 @@ function BoardPageContent() {
                           {row.identity && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.identity}`}</span>}
                           {row.gender && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 grid grid-cols-[4rem_1fr] grid-rows-auto items-start gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                        <div className="mt-3 grid grid-cols-[4rem_1fr] grid-rows-auto items-start gap-x-1 gap-y-2.5 text-base leading-relaxed">
                           {row.teach_mode ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                              <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
-                                {row.teach_mode.replace(/、/g, " / ")}
+                              <span className="flex min-w-0 flex-nowrap text-gray-500 dark:text-gray-400">
+                                <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
                               </span>
                             </div>
                           ) : null}
@@ -357,7 +357,7 @@ function BoardPageContent() {
                     </div>
                   )}
                   <div className="flex items-start gap-3 pr-20">
-                    <div className="min-w-0 flex-1 grid grid-cols-[4rem_1fr] items-start gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                    <div className="min-w-0 flex-1 grid grid-cols-[4rem_1fr] items-start gap-x-1 gap-y-2.5 text-base leading-relaxed">
                       {row.teach_mode ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
