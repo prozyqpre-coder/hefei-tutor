@@ -1,32 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS } from "@/lib/constants";
+import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS } from "@/lib/constants";
+import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
 
-/** 年级显示顺序：小学（一至六）> 初中（初一至初三）> 高中（高一至高三）；返回 [学段, 段内序号] */
-function gradeSortKey(g: string): [number, number] {
-  const small = ["小学一年级", "小学二年级", "小学三年级", "小学四年级", "小学五年级", "小学六年级", "小一", "小二", "小三", "小四", "小五", "小六"];
-  const mid = ["初一", "初二", "初三"];
-  const high = ["高一", "高二", "高三"];
-  const i = small.indexOf(g); if (i >= 0) return [0, i % 6];
-  const j = mid.indexOf(g); if (j >= 0) return [1, j];
-  const k = high.indexOf(g); if (k >= 0) return [2, k];
-  return [0, 99];
-}
-
-function sortGrades(grades: string[]): string[] {
-  return [...grades].sort((a, b) => {
-    const [ta, sa] = gradeSortKey(a);
-    const [tb, sb] = gradeSortKey(b);
-    if (ta !== tb) return ta - tb;
-    return sa - sb;
-  });
-}
-
-/** 年级所属学段：小学 0 / 初中 1 / 高中 2，用于标签背景色 */
+/** 年级所属学段（找学生卡片用）：小学 0 / 初中 1 / 高中 2 */
 function gradeTier(g: string): 0 | 1 | 2 {
   if (/小学|^小[一二三四五六]$/.test(g)) return 0;
   if (/初一|初二|初三|初中/.test(g)) return 1;
@@ -34,10 +16,15 @@ function gradeTier(g: string): 0 | 1 | 2 {
   return 0;
 }
 
-const GRADE_TAG_CLASS: Record<0 | 1 | 2, string> = {
-  0: "rounded-md bg-blue-100 px-2 py-0.5 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  1: "rounded-md bg-green-100 px-2 py-0.5 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  2: "rounded-md bg-violet-100 px-2 py-0.5 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+/** 教师卡片年级标签：统一宽度、浅灰背景、font-medium、饱满内边距 px-3 py-1 */
+const TEACHER_GRADE_TAG_CLASS =
+  "inline-flex min-w-[2.5rem] items-center justify-center rounded-md bg-gray-100 px-3 py-1 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400 mx-1";
+
+/** 找学生卡片年级标签样式（具体年级，保留原配色） */
+const DEMAND_GRADE_TAG_CLASS: Record<0 | 1 | 2, string> = {
+  0: "rounded-md bg-blue-100 px-3 py-1 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  1: "rounded-md bg-green-100 px-3 py-1 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  2: "rounded-md bg-violet-100 px-3 py-1 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
 };
 
 type TutorRow = {
@@ -53,6 +40,7 @@ type TutorRow = {
   min_salary: number | null;
   max_salary: number | null;
   note?: string | null;
+  teaching_style?: string | null;
   status: string;
   created_at: string;
 };
@@ -74,7 +62,15 @@ type DemandRow = {
 const MODES = ["线上", "合肥线下"] as const;
 
 export default function BoardPage() {
-  const [tab, setTab] = useState<"tutors" | "demands">("tutors");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const initialTab = tabParam === "demands" ? "demands" : "tutors";
+  const [tab, setTab] = useState<"tutors" | "demands">(initialTab);
+
+  useEffect(() => {
+    if (tabParam === "demands") setTab("demands");
+    else if (tabParam === "tutors") setTab("tutors");
+  }, [tabParam]);
   const [tutors, setTutors] = useState<TutorRow[]>([]);
   const [demands, setDemands] = useState<DemandRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,11 +160,15 @@ export default function BoardPage() {
                 onChange={(e) => setFilters((f) => ({ ...f, grade: e.target.value }))}
                 className="rounded-lg border border-input bg-background px-3 py-2"
               >
-                {/* 显式“全部年级” */}
+                {/* 找老师用大类，找学生用细分 */}
                 <option value="">全部年级</option>
-                {GRADES_SHORT.map((g) => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
+                {tab === "tutors"
+                  ? TEACHER_GRADE_OPTIONS.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))
+                  : GRADES_SHORT.map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
               </select>
               <select
                 value={filters.subject}
@@ -244,22 +244,22 @@ export default function BoardPage() {
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
                           {row.status === "verified" ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 dark:text-amber-400">
                               <ShieldCheck className="h-3.5 w-3.5" /> 实名认证
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                               <ShieldAlert className="h-3.5 w-3.5" /> 未认证
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 leading-relaxed text-sm text-muted-foreground">
+                        <p className="mt-1 leading-relaxed text-base text-muted-foreground">
                           {row.real_name && <span>{row.real_name}</span>}
                           {row.university && <span>{row.real_name ? ` · ${row.university}` : row.university}</span>}
                           {row.identity && <span>{` · ${row.identity}`}</span>}
                           {row.gender && <span>{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 space-y-2.5 text-xs leading-relaxed">
+                        <div className="mt-3 space-y-2.5 text-sm leading-relaxed">
                           {row.teach_mode && (
                             <div>
                               <span className="font-bold text-gray-800 dark:text-gray-200">模式：</span>
@@ -275,9 +275,9 @@ export default function BoardPage() {
                           {row.grades?.length ? (
                             <div className="flex flex-wrap items-center gap-2 leading-relaxed">
                               <span className="shrink-0 font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                              <span className="flex flex-wrap gap-1.5">
-                                {sortGrades(row.grades).map((g) => (
-                                  <span key={g} className={cn("shrink-0", GRADE_TAG_CLASS[gradeTier(g)])}>
+                              <span className="flex flex-wrap items-center -mx-1">
+                                {teacherGradesForDisplay(row.grades).map((g) => (
+                                  <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
                                     {g}
                                   </span>
                                 ))}
@@ -289,7 +289,7 @@ export default function BoardPage() {
                               <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                               <span className="flex flex-wrap gap-1.5">
                                 {row.subjects.map((s) => (
-                                  <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                  <span key={s} className="rounded-md bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                                     {s}
                                   </span>
                                 ))}
@@ -298,9 +298,20 @@ export default function BoardPage() {
                           ) : null}
                         </div>
                         {row.note && (
-                          <p className="mt-3 line-clamp-2 leading-relaxed text-xs text-muted-foreground">
+                          <p className="mt-3 line-clamp-2 leading-relaxed text-sm text-muted-foreground">
                             {row.note}
                           </p>
+                        )}
+                        {row.teaching_style?.trim() && (
+                          <div className="mt-3 rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
+                            <p className="flex items-start gap-2 text-sm leading-relaxed">
+                              <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
+                              <span>
+                                <span className="font-bold text-amber-800 dark:text-amber-200">授课风格：</span>
+                                <span className="text-amber-900/90 dark:text-amber-100/90 line-clamp-2">{row.teaching_style.trim()}</span>
+                              </span>
+                            </p>
+                          </div>
                         )}
                       </div>
                       {(row.min_salary != null || row.max_salary != null) && (
@@ -308,7 +319,7 @@ export default function BoardPage() {
                           <div className="text-base font-bold text-orange-500 dark:text-orange-400">
                             ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
                           </div>
-                          <div className="text-xs text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                          <div className="text-sm text-orange-500/90 dark:text-orange-400/90">/小时</div>
                         </div>
                       )}
                     </div>
@@ -350,7 +361,7 @@ export default function BoardPage() {
                       {row.student_grade && (
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                          <span className={cn("rounded-md px-2 py-0.5", GRADE_TAG_CLASS[gradeTier(row.student_grade)])}>
+                          <span className={cn("rounded-md px-2 py-0.5", DEMAND_GRADE_TAG_CLASS[gradeTier(row.student_grade)])}>
                             {row.student_grade}
                           </span>
                         </div>
@@ -360,7 +371,7 @@ export default function BoardPage() {
                           <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                           <span className="flex flex-wrap gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
-                              <span key={s} className="rounded-md bg-gray-100 px-2 py-0.5 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                              <span key={s} className="rounded-md bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                                 {s.trim()}
                               </span>
                             ))}

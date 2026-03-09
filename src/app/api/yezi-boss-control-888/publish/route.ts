@@ -61,6 +61,7 @@ export async function POST(request: Request) {
       min_salary: body.min_salary != null && Number.isFinite(Number(body.min_salary)) ? Number(body.min_salary) : null,
       max_salary: body.max_salary != null && Number.isFinite(Number(body.max_salary)) ? Number(body.max_salary) : null,
       note: (body.note as string)?.trim() || null,
+      teaching_style: (body.teaching_style as string)?.trim() || null,
       auth_files: [],
       status: "verified",
       sort_order: 0,

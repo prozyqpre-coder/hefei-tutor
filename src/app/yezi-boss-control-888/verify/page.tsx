@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Loader2, XCircle, X, ChevronDown, PenLine } from "lucide-react";
-import { HEFEI_AREAS_FULL, SUBJECTS, GRADES_SHORT, GRADES } from "@/lib/constants";
+import { HEFEI_AREAS_FULL, SUBJECTS, GRADES_SHORT, TEACHER_GRADE_OPTIONS } from "@/lib/constants";
+import { teacherGradesForDisplay } from "@/lib/grades";
 import { adminPath, adminApiPath } from "@/lib/admin-path";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ type PendingRow = {
   min_salary: number | null;
   max_salary: number | null;
   note?: string | null;
+  teaching_style?: string | null;
   auth_files: string[] | null;
   created_at: string;
   cert_urls: string[];
@@ -88,6 +90,7 @@ export default function AdminVerifyPage() {
   const [editingTutorMinSalary, setEditingTutorMinSalary] = useState("");
   const [editingTutorMaxSalary, setEditingTutorMaxSalary] = useState("");
   const [editingTutorNote, setEditingTutorNote] = useState("");
+  const [editingTutorTeachingStyle, setEditingTutorTeachingStyle] = useState("");
   const [editingDemand, setEditingDemand] = useState<DemandAdminRow | null>(null);
   const [editingDemandModes, setEditingDemandModes] = useState<string[]>([]);
   const [editingRegion, setEditingRegion] = useState("");
@@ -115,6 +118,7 @@ export default function AdminVerifyPage() {
   const [publishRegion, setPublishRegion] = useState("");
   const [publishDetailAddress, setPublishDetailAddress] = useState("");
   const [publishNote, setPublishNote] = useState("");
+  const [publishTeachingStyle, setPublishTeachingStyle] = useState("");
 
   function togglePublishRegion(r: string) {
     setPublishRegions((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
@@ -186,6 +190,7 @@ export default function AdminVerifyPage() {
       setPublishRegion("");
       setPublishDetailAddress("");
       setPublishNote("");
+      setPublishTeachingStyle("");
       setShowPublishModal(false);
       fetchList();
       fetchAllTutors();
@@ -225,11 +230,12 @@ export default function AdminVerifyPage() {
     setEditingTutorGender((row.gender as "男" | "女" | null) || "");
     setEditingTutorModes(row.teach_mode ? row.teach_mode.split("、").filter(Boolean) : []);
     setEditingTutorRegions(row.regions || []);
-    setEditingTutorGrades(row.grades || []);
+    setEditingTutorGrades(teacherGradesForDisplay(row.grades || []));
     setEditingTutorSubjects(row.subjects || []);
     setEditingTutorMinSalary(row.min_salary != null ? String(row.min_salary) : "");
     setEditingTutorMaxSalary(row.max_salary != null ? String(row.max_salary) : "");
     setEditingTutorNote(row.note || "");
+    setEditingTutorTeachingStyle(row.teaching_style || "");
   }
 
   function closeTutorEdit() {
@@ -245,6 +251,7 @@ export default function AdminVerifyPage() {
     setEditingTutorMinSalary("");
     setEditingTutorMaxSalary("");
     setEditingTutorNote("");
+    setEditingTutorTeachingStyle("");
   }
 
   function openDemandEdit(d: DemandAdminRow) {
@@ -482,9 +489,13 @@ export default function AdminVerifyPage() {
               className="rounded-lg border border-input bg-background px-3 py-2"
             >
               <option value="">年级</option>
-              {GRADES_SHORT.map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
+              {tab === "tutors"
+                ? TEACHER_GRADE_OPTIONS.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))
+                : GRADES_SHORT.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
             </select>
             <select
               value={adminFilters.subject}
@@ -960,11 +971,31 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
             </>
           )}
           <div>
-            <label className="block text-xs text-muted-foreground">可授年级 / 学生年级（多选）</label>
+            <label className={cn("block text-xs", publishType === "tutor" ? "font-bold text-gray-800 dark:text-gray-200" : "text-muted-foreground")}>
+              {publishType === "tutor" ? "可授年级（多选）" : "学生年级（多选）"}
+            </label>
             <div className="mt-1 flex flex-wrap gap-2">
-              {(publishType === "tutor" ? GRADES : GRADES_SHORT).map((g) => (
-                <button key={g} type="button" onClick={() => togglePublishGrade(g)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishGrades.includes(g) ? "border-primary bg-primary/10 text-primary" : "border-input")}>{g}</button>
-              ))}
+              {publishType === "tutor" ? (
+                TEACHER_GRADE_OPTIONS.map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => togglePublishGrade(g)}
+                    className={cn(
+                      "inline-flex min-w-[2.5rem] items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium mx-1",
+                      publishGrades.includes(g) ? "border border-primary bg-primary/10 text-primary" : "border border-input bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                    )}
+                  >
+                    {g}
+                  </button>
+                ))
+              ) : (
+                GRADES_SHORT.map((g) => (
+                  <button key={g} type="button" onClick={() => togglePublishGrade(g)} className={cn("rounded-lg border px-3 py-1.5 text-xs", publishGrades.includes(g) ? "border-primary bg-primary/10 text-primary" : "border-input")}>
+                    {g}
+                  </button>
+                ))
+              )}
             </div>
           </div>
           <div>
@@ -989,6 +1020,12 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
             <label className="block text-xs text-muted-foreground">备注</label>
             <textarea value={publishNote} onChange={(e) => setPublishNote(e.target.value)} rows={2} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
           </div>
+          {publishType === "tutor" && (
+            <div>
+              <label className="block text-xs text-muted-foreground">授课风格 / 教师寄语（可选）</label>
+              <textarea value={publishTeachingStyle} onChange={(e) => setPublishTeachingStyle(e.target.value)} rows={2} placeholder="如：耐心细致，善于启发思考" className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
+            </div>
+          )}
           <Button type="submit" className="w-full" disabled={publishLoading}>
             {publishLoading ? "发布中…" : "发布（直接上架）"}
           </Button>
@@ -1043,6 +1080,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                   min_salary: min != null && !Number.isNaN(min) ? min : null,
                   max_salary: max != null && !Number.isNaN(max) ? max : null,
                   note: editingTutorNote.trim() || null,
+                  teaching_style: editingTutorTeachingStyle.trim() || null,
                 };
                 try {
                   const res = await fetch(adminApiPath("tutor-posts"), {
@@ -1157,16 +1195,16 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                 </div>
               )}
               <div>
-                <label className="block text-xs text-muted-foreground">可授年级（多选）</label>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {GRADES.map((g) => (
+                <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">可授年级（多选）</label>
+                <div className="mt-1 flex flex-wrap gap-2 -mx-1">
+                  {TEACHER_GRADE_OPTIONS.map((g) => (
                     <button
                       key={g}
                       type="button"
                       onClick={() => toggleEditingTutorGrade(g)}
                       className={cn(
-                        "rounded-lg border px-3 py-1.5 text-xs",
-                        editingTutorGrades.includes(g) ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"
+                        "inline-flex min-w-[2.5rem] items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium mx-1",
+                        editingTutorGrades.includes(g) ? "border border-primary bg-primary/10 text-primary" : "border border-input bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                       )}
                     >
                       {g}
@@ -1224,6 +1262,16 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                 <p className="mt-0.5 text-right text-[10px] text-muted-foreground">
                   {editingTutorNote.length}/50
                 </p>
+              </div>
+              <div>
+                <label className="block text-xs text-muted-foreground">授课风格 / 教师寄语（可选）</label>
+                <textarea
+                  rows={2}
+                  value={editingTutorTeachingStyle}
+                  onChange={(e) => setEditingTutorTeachingStyle(e.target.value)}
+                  placeholder="如：耐心细致，善于启发思考"
+                  className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1"
+                />
               </div>
               <div className="mt-3 flex justify-end gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={closeTutorEdit}>

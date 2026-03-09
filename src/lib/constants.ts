@@ -115,8 +115,11 @@ export const HEFEI_AREAS_FULL = [
 
 export type HefeiAreaFull = (typeof HEFEI_AREAS_FULL)[number];
 
-/** 可授课年级（多选）：小学一年级～高三 */
-export const GRADES = [
+/** 教员可授课年级（大类，多选）：仅小学/初中/高中 */
+export const TEACHER_GRADE_OPTIONS = ["小学", "初中", "高中"] as const;
+
+/** 学生/需求年级（具体，多选）：小学一年级～高三 */
+export const STUDENT_GRADE_OPTIONS = [
   "小学一年级",
   "小学二年级",
   "小学三年级",
@@ -131,11 +134,15 @@ export const GRADES = [
   "高三",
 ] as const;
 
+/** @deprecated 请用 STUDENT_GRADE_OPTIONS */
+export const GRADES = STUDENT_GRADE_OPTIONS;
+
 /** 年级短标签（小一～高三），用于筛选与展示 */
 export const GRADES_SHORT = [
   "小一", "小二", "小三", "小四", "小五", "小六",
   "初一", "初二", "初三", "高一", "高二", "高三",
 ] as const;
 
-export type Grade = (typeof GRADES)[number];
+export type Grade = (typeof STUDENT_GRADE_OPTIONS)[number];
 export type GradeShort = (typeof GRADES_SHORT)[number];
+export type TeacherGrade = (typeof TEACHER_GRADE_OPTIONS)[number];

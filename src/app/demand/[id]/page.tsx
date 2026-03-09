@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { WECHAT_TUTOR } from "@/lib/wechat";
 import { Button } from "@/components/ui/button";
+import { WechatContactButton } from "@/components/WechatContactButton";
 
 type DemandDetail = {
   id: string;
@@ -116,9 +118,7 @@ export default function DemandDetailPage() {
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 px-4 py-3">
-        <Button className="h-11 w-full rounded-full text-sm font-medium" onClick={() => alert("联系方式暂未配置，请稍后在后台补充。")}>
-          立即联系
-        </Button>
+        <WechatContactButton wechat={WECHAT_TUTOR} />
       </div>
     </div>
   );

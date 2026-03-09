@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { teacherGradesForDisplay } from "@/lib/grades";
+import { WECHAT_DEMAND } from "@/lib/wechat";
 import { Button } from "@/components/ui/button";
+import { WechatContactButton } from "@/components/WechatContactButton";
 import { ShieldCheck, ShieldAlert } from "lucide-react";
 
 type TutorDetail = {
@@ -18,6 +21,7 @@ type TutorDetail = {
   min_salary: number | null;
   max_salary: number | null;
   note: string | null;
+  teaching_style: string | null;
   status: string;
   created_at: string;
 };
@@ -38,7 +42,7 @@ export default function TutorDetailPage() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("tutor_posts")
-          .select("id, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, status, created_at")
+          .select("id, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, created_at")
           .eq("id", params.id)
           .single();
         if (error) {
@@ -113,7 +117,7 @@ export default function TutorDetailPage() {
         </div>
         <div className="flex justify-between gap-2">
           <span className="text-muted-foreground">可授年级</span>
-          <span className="text-right">{data.grades?.length ? data.grades.join("、") : "未填写"}</span>
+          <span className="text-right">{data.grades?.length ? teacherGradesForDisplay(data.grades).join("、") : "未填写"}</span>
         </div>
         <div className="flex justify-between gap-2">
           <span className="text-muted-foreground">辅导科目</span>
@@ -136,10 +140,20 @@ export default function TutorDetailPage() {
         </div>
       )}
 
+      {data.teaching_style?.trim() && (
+        <div className="rounded-xl bg-amber-50 p-4 dark:bg-amber-900/20">
+          <p className="flex items-start gap-2 text-sm leading-relaxed">
+            <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
+            <span>
+              <span className="font-bold text-amber-800 dark:text-amber-200">授课风格：</span>
+              <span className="whitespace-pre-wrap text-amber-900/90 dark:text-amber-100/90">{data.teaching_style.trim()}</span>
+            </span>
+          </p>
+        </div>
+      )}
+
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 px-4 py-3">
-        <Button className="h-11 w-full rounded-full text-sm font-medium" onClick={() => alert("联系方式暂未配置，请稍后在后台补充。")}>
-          立即联系
-        </Button>
+        <WechatContactButton wechat={WECHAT_DEMAND} />
       </div>
     </div>
   );

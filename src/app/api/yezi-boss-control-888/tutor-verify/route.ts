@@ -16,7 +16,7 @@ export async function GET() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, { auth: { persistSession: false } });
   const { data: rows, error } = await supabase
     .from("tutor_posts")
-    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, auth_files, status, created_at")
+    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, auth_files, status, created_at")
     .eq("status", "pending")
     .order("created_at", { ascending: false });
 

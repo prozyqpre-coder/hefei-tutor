@@ -31,14 +31,22 @@ export async function GET(request: Request) {
 
   if (mode) q = q.ilike("teach_mode", `%${mode}%`);
   if (region) q = q.eq("region", region);
-  if (grade) q = q.eq("student_grade", grade);
   if (subject) q = q.eq("subject", subject);
   if (minSalary) q = q.gte("min_salary", Number(minSalary));
   if (maxSalary) q = q.lte("max_salary", Number(maxSalary));
 
-  const { data, error } = await q;
+  const { data: rows, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ list: data ?? [] });
+
+  let list = rows ?? [];
+  if (grade) {
+    const sg = (r: { student_grade?: string | null }) => (r.student_grade || "").replace(/\s/g, "");
+    if (grade === "小学") list = list.filter((r) => /小[一二三四五六]|小学/.test(sg(r)));
+    else if (grade === "初中") list = list.filter((r) => /初[一二三]|初中/.test(sg(r)));
+    else if (grade === "高中") list = list.filter((r) => /高[一二三]|高中/.test(sg(r)));
+    else list = list.filter((r) => sg(r).split(/[、,，]/).some((s) => s.trim() === grade));
+  }
+  return NextResponse.json({ list });
 }
 
 export async function PATCH(request: Request) {

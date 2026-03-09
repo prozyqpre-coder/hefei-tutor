@@ -19,12 +19,15 @@ export async function GET(request: Request) {
 
   if (mode) q = q.ilike("teach_mode", `%${mode}%`);
   if (region) q = q.eq("region", region);
-  if (grade) q = q.eq("student_grade", grade);
   if (subject) q = q.eq("subject", subject);
 
   const { data: rows, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const list = rows ?? [];
+  let list = rows ?? [];
+  if (grade) {
+    const sg = (r: { student_grade?: string | null }) => (r.student_grade || "").replace(/\s/g, "");
+    list = list.filter((r) => sg(r).split(/[、,，]/).some((s) => s.trim() === grade));
+  }
   return NextResponse.json({ list });
 }

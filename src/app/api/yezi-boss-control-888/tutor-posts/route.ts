@@ -6,23 +6,25 @@ function getKey(): string | null {
   return v && typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-function gradeShortToFull(short: string): string {
-  switch (short) {
-    case "小一": return "小学一年级";
-    case "小二": return "小学二年级";
-    case "小三": return "小学三年级";
-    case "小四": return "小学四年级";
-    case "小五": return "小学五年级";
-    case "小六": return "小学六年级";
-    default: return short;
-  }
+function tutorGradeMatches(filterGrade: string | null, grades: string[]): boolean {
+  if (!filterGrade || !grades.length) return true;
+  if (filterGrade === "小学") return grades.some((g) => g === "小学" || /^小学|^小[一二三四五六]$/.test(g));
+  if (filterGrade === "初中") return grades.some((g) => g === "初中" || /^初[一二三]$/.test(g));
+  if (filterGrade === "高中") return grades.some((g) => g === "高中" || /^高[一二三]$/.test(g));
+  const shortToFull: Record<string, string> = {
+    小一: "小学一年级", 小二: "小学二年级", 小三: "小学三年级",
+    小四: "小学四年级", 小五: "小学五年级", 小六: "小学六年级",
+  };
+  const full = shortToFull[filterGrade] ?? filterGrade;
+  return grades.includes(full) || (filterGrade.startsWith("小") && grades.includes("小学")) ||
+    (filterGrade.startsWith("初") && grades.includes("初中")) || (filterGrade.startsWith("高") && grades.includes("高中"));
 }
 
-function phaseFromGradeShort(short: string | null): "primary" | "junior" | "senior" | null {
-  if (!short) return null;
-  if (short.startsWith("小")) return "primary";
-  if (short.startsWith("初")) return "junior";
-  if (short.startsWith("高")) return "senior";
+function phaseFromGrade(filterGrade: string | null): "primary" | "junior" | "senior" | null {
+  if (!filterGrade) return null;
+  if (filterGrade === "小学" || filterGrade.startsWith("小")) return "primary";
+  if (filterGrade === "初中" || filterGrade.startsWith("初")) return "junior";
+  if (filterGrade === "高中" || filterGrade.startsWith("高")) return "senior";
   return null;
 }
 
@@ -45,7 +47,7 @@ export async function GET(request: Request) {
 
   let q = supabase
     .from("tutor_posts")
-    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, status, sort_order, created_at")
+    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, sort_order, created_at")
     .in("status", ["pending", "verified", "rejected"])
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
@@ -58,14 +60,12 @@ export async function GET(request: Request) {
   const { data: rows, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  const fullGrade = gradeShort ? gradeShortToFull(gradeShort) : null;
-  const phase = phaseFromGradeShort(gradeShort);
+  const phase = phaseFromGrade(gradeShort);
 
   const list = (rows ?? []).filter((row) => {
     const grades = (row.grades || []) as string[];
     const subjects = (row.subjects || []) as string[];
-    let gradeOk = true;
-    if (fullGrade) gradeOk = grades.includes(fullGrade);
+    const gradeOk = tutorGradeMatches(gradeShort, grades);
     let subjectOk = true;
     if (subject) {
       const candidates: string[] = [subject, "全科"];
