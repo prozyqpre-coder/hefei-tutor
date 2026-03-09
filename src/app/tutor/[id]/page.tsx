@@ -140,7 +140,7 @@ export default function TutorDetailPage() {
         </div>
       )}
 
-      {data.teaching_style?.trim() && (
+      {data.teaching_style != null && String(data.teaching_style).trim() !== "" && (
         <div className="rounded-xl bg-amber-50 p-4 dark:bg-amber-900/20">
           <p className="flex items-start gap-2 text-sm leading-relaxed">
             <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>

@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS } from "@/lib/constants";
+import { WECHAT_DEMAND, WECHAT_TUTOR } from "@/lib/wechat";
 import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
 import { ShieldCheck, ShieldAlert, ChevronDown } from "lucide-react";
@@ -16,15 +17,15 @@ function gradeTier(g: string): 0 | 1 | 2 {
   return 0;
 }
 
-/** 教师卡片年级标签：统一宽度、浅灰背景、font-medium、饱满内边距 px-3 py-1 */
+/** 教师卡片年级标签：深蓝底白字，高对比度，py-2 加大高度 */
 const TEACHER_GRADE_TAG_CLASS =
-  "inline-flex min-w-[2.5rem] items-center justify-center rounded-md bg-gray-100 px-3 py-1 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400 mx-1";
+  "inline-flex min-h-[36px] min-w-[2.5rem] items-center justify-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800 mx-1";
 
-/** 找学生卡片年级标签样式（具体年级，保留原配色） */
+/** 找学生卡片年级标签：深色背景白字，高对比度 */
 const DEMAND_GRADE_TAG_CLASS: Record<0 | 1 | 2, string> = {
-  0: "rounded-md bg-blue-100 px-3 py-1 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  1: "rounded-md bg-green-100 px-3 py-1 text-green-700 dark:bg-green-900/40 dark:text-green-300",
-  2: "rounded-md bg-violet-100 px-3 py-1 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+  0: "inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800",
+  1: "inline-flex min-h-[36px] items-center rounded-md bg-green-700 px-3 py-2 font-medium text-white dark:bg-green-800",
+  2: "inline-flex min-h-[36px] items-center rounded-md bg-violet-700 px-3 py-2 font-medium text-white dark:bg-violet-800",
 };
 
 type TutorRow = {
@@ -117,18 +118,22 @@ function BoardPageContent() {
   return (
     <div className="flex flex-col">
       <div className="sticky top-[57px] z-30 border-b border-border bg-background">
+        <div className="border-b border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground">
+          <p>（家长）想找家教请微信联系 {WECHAT_DEMAND}</p>
+          <p className="mt-1">（教员）想做家教 {WECHAT_TUTOR}</p>
+        </div>
         <div className="flex">
           <button
             type="button"
             onClick={() => setTab("tutors")}
-            className={cn("flex-1 py-3 text-sm font-medium", tab === "tutors" ? "border-b-2 border-primary text-primary" : "text-muted-foreground")}
+            className={cn("flex-1 min-h-[44px] py-3 text-sm font-medium", tab === "tutors" ? "border-b-2 border-primary text-primary" : "text-muted-foreground")}
           >
             找老师
           </button>
           <button
             type="button"
             onClick={() => setTab("demands")}
-            className={cn("flex-1 py-3 text-sm font-medium", tab === "demands" ? "border-b-2 border-primary text-primary" : "text-muted-foreground")}
+            className={cn("flex-1 min-h-[44px] py-3 text-sm font-medium", tab === "demands" ? "border-b-2 border-primary text-primary" : "text-muted-foreground")}
           >
             找学生
           </button>
@@ -137,7 +142,7 @@ function BoardPageContent() {
           <button
             type="button"
             onClick={() => setFilterOpen((o) => !o)}
-            className="flex w-full items-center justify-between text-sm text-muted-foreground"
+            className="flex min-h-[44px] w-full items-center justify-between text-sm text-muted-foreground"
           >
             <span>筛选：区域、年级、科目、模式</span>
             <ChevronDown className={cn("h-4 w-4 transition", filterOpen && "rotate-180")} />
@@ -222,12 +227,12 @@ function BoardPageContent() {
           tutors.length === 0 ? (
             <p className="text-muted-foreground">暂无教员</p>
           ) : (
-            <ul className="space-y-4">
+            <ul className="space-y-6">
               {tutors.map((row) => (
-                <li key={row.id}>
+                <li key={row.id} className="mb-6 last:mb-0">
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    className="block rounded-xl border border-border bg-card p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
@@ -240,7 +245,7 @@ function BoardPageContent() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">
+                          <span className="text-xl font-bold">
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
                           {row.status === "verified" ? (
@@ -253,13 +258,13 @@ function BoardPageContent() {
                             </span>
                           )}
                         </div>
-                        <p className="mt-1 leading-relaxed text-base text-muted-foreground">
+                        <p className="mt-1 text-base leading-relaxed text-muted-foreground">
                           {row.real_name && <span>{row.real_name}</span>}
                           {row.university && <span>{row.real_name ? ` · ${row.university}` : row.university}</span>}
                           {row.identity && <span>{` · ${row.identity}`}</span>}
                           {row.gender && <span>{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 space-y-2.5 text-sm leading-relaxed">
+                        <div className="mt-3 space-y-2.5 text-base leading-relaxed">
                           {row.teach_mode && (
                             <div>
                               <span className="font-bold text-gray-800 dark:text-gray-200">模式：</span>
@@ -289,7 +294,7 @@ function BoardPageContent() {
                               <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                               <span className="flex flex-wrap gap-1.5">
                                 {row.subjects.map((s) => (
-                                  <span key={s} className="rounded-md bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                  <span key={s} className="inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800">
                                     {s}
                                   </span>
                                 ))}
@@ -298,11 +303,11 @@ function BoardPageContent() {
                           ) : null}
                         </div>
                         {row.note && (
-                          <p className="mt-3 line-clamp-2 leading-relaxed text-sm text-muted-foreground">
+                          <p className="mt-3 line-clamp-2 text-base leading-relaxed text-muted-foreground">
                             {row.note}
                           </p>
                         )}
-                        {row.teaching_style?.trim() && (
+                        {row.teaching_style != null && String(row.teaching_style).trim() !== "" && (
                           <div className="mt-3 rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
                             <p className="flex items-start gap-2 text-sm leading-relaxed">
                               <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
@@ -316,10 +321,10 @@ function BoardPageContent() {
                       </div>
                       {(row.min_salary != null || row.max_salary != null) && (
                         <div className="shrink-0 text-right">
-                          <div className="text-base font-bold text-orange-500 dark:text-orange-400">
+                          <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
                             ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
                           </div>
-                          <div className="text-sm text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                          <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
                         </div>
                       )}
                     </div>
@@ -331,15 +336,15 @@ function BoardPageContent() {
         ) : demands.length === 0 ? (
           <p className="text-muted-foreground">暂无需求</p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-6">
             {demands.map((row) => (
-              <li key={row.id}>
+              <li key={row.id} className="mb-6 last:mb-0">
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block rounded-xl border border-border bg-card p-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  className="block rounded-xl border border-border bg-card p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1 space-y-2.5 text-sm leading-relaxed">
+                    <div className="min-w-0 flex-1 space-y-2.5 text-base leading-relaxed">
                       {row.teach_mode && (
                         <div>
                           <span className="font-bold text-gray-800 dark:text-gray-200">模式：</span>
@@ -361,7 +366,7 @@ function BoardPageContent() {
                       {row.student_grade && (
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                          <span className={cn("rounded-md px-2 py-0.5", DEMAND_GRADE_TAG_CLASS[gradeTier(row.student_grade)])}>
+                          <span className={DEMAND_GRADE_TAG_CLASS[gradeTier(row.student_grade)]}>
                             {row.student_grade}
                           </span>
                         </div>
@@ -371,7 +376,7 @@ function BoardPageContent() {
                           <span className="font-bold text-gray-800 dark:text-gray-200">科目：</span>
                           <span className="flex flex-wrap gap-1.5">
                             {row.subject.split(/[、,，]/).map((s) => (
-                              <span key={s} className="rounded-md bg-gray-100 px-3 py-1 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                              <span key={s} className="inline-flex min-h-[36px] items-center rounded-md bg-blue-700 px-3 py-2 font-medium text-white dark:bg-blue-800">
                                 {s.trim()}
                               </span>
                             ))}
@@ -379,17 +384,17 @@ function BoardPageContent() {
                         </div>
                       )}
                       {row.note && (
-                        <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+                        <p className="mt-2 line-clamp-2 text-base text-muted-foreground">
                           {row.note}
                         </p>
                       )}
                     </div>
                     {(row.min_salary != null || row.max_salary != null) && (
                       <div className="shrink-0 text-right">
-                        <div className="text-base font-bold text-orange-500 dark:text-orange-400">
+                        <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
                           ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
                         </div>
-                        <div className="text-xs text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                        <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
                       </div>
                     )}
                   </div>
