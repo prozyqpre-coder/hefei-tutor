@@ -41,3 +41,10 @@
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
+
+/* 微信内置浏览器：强制禁止标签内换行，防止词组被拆断 */
+@layer utilities {
+  .nowrap-force {
+    white-space: nowrap !important;
+  }
+}
