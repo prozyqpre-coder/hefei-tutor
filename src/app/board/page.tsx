@@ -229,9 +229,17 @@ function BoardPageContent() {
                 <li key={row.id} className="mb-6 last:mb-0">
                   <Link
                     href={`/tutor/${row.id}`}
-                    className="block rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
-                    <div className="flex items-start gap-3">
+                    {(row.min_salary != null || row.max_salary != null) && (
+                      <div className="absolute right-3 top-4 text-right">
+                        <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
+                          ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                        </div>
+                        <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-3 pr-20">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
                         <div className={cn("flex h-12 w-12 items-center justify-center rounded-full bg-muted text-lg font-medium", row.status === "verified" ? "" : "border-2 border-border")}>
                           {(row.real_name || row.university || "?")[0]}
@@ -261,27 +269,27 @@ function BoardPageContent() {
                           {row.identity && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.identity}`}</span>}
                           {row.gender && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
-                        <div className="mt-3 grid grid-cols-[3.5rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                        <div className="mt-3 grid grid-cols-[4rem_1fr] grid-rows-auto items-start gap-x-2 gap-y-2.5 text-base leading-relaxed">
                           {row.teach_mode ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                              <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
-                                <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
+                              <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
+                                {row.teach_mode.replace(/、/g, " / ")}
                               </span>
                             </div>
                           ) : null}
                           {row.regions && row.regions.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                              <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
-                                <span className="!whitespace-nowrap">{row.regions.join("、")}</span>
+                              <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
+                                {row.regions.join("、")}
                               </span>
                             </div>
                           ) : null}
                           {row.grades && row.grades.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">年级：</span>
-                              <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
+                              <span className="flex min-w-0 flex-wrap items-center gap-1">
                                 {teacherGradesForDisplay(row.grades).map((g) => (
                                   <span key={g} className={TEACHER_GRADE_TAG_CLASS}>
                                     {g}
@@ -293,7 +301,7 @@ function BoardPageContent() {
                           {row.subjects && row.subjects.length > 0 ? (
                             <div className="contents">
                               <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                              <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
+                              <span className="flex min-w-0 flex-wrap items-center gap-1">
                                 {row.subjects.map((s) => (
                                   <span key={s} className={TEACHER_SUBJECT_TAG_CLASS}>
                                     {s}
@@ -309,7 +317,7 @@ function BoardPageContent() {
                           </p>
                         )}
                         {row.teaching_style != null && String(row.teaching_style).trim() !== "" && (
-                          <div className="mt-3 rounded-lg bg-amber-50 p-3 pb-4 dark:bg-amber-900/20">
+                          <div className="mt-3 h-auto overflow-visible rounded-lg bg-amber-50 p-3 pb-4 dark:bg-amber-900/20">
                             <p className="flex items-start gap-2 text-sm leading-relaxed">
                               <span className="shrink-0 text-amber-600 dark:text-amber-400">💡</span>
                               <span className="min-w-0 flex-1 overflow-visible">
@@ -324,14 +332,6 @@ function BoardPageContent() {
                           <ChevronRight className="h-4 w-4" />
                         </p>
                       </div>
-                      {(row.min_salary != null || row.max_salary != null) && (
-                        <div className="shrink-0 text-right">
-                          <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
-                            ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
-                          </div>
-                          <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
-                        </div>
-                      )}
                     </div>
                   </Link>
                 </li>
@@ -346,31 +346,39 @@ function BoardPageContent() {
               <li key={row.id} className="mb-6 last:mb-0">
                 <Link
                   href={`/demand/${row.id}`}
-                  className="block rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                  className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="min-w-0 flex-1 grid grid-cols-[3.5rem_1fr] gap-x-2 gap-y-2.5 text-base leading-relaxed">
+                  {(row.min_salary != null || row.max_salary != null) && (
+                    <div className="absolute right-3 top-4 text-right">
+                      <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
+                        ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
+                      </div>
+                      <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-3 pr-20">
+                    <div className="min-w-0 flex-1 grid grid-cols-[4rem_1fr] items-start gap-x-2 gap-y-2.5 text-base leading-relaxed">
                       {row.teach_mode ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">模式：</span>
-                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
-                            <span className="!whitespace-nowrap">{row.teach_mode.replace(/、/g, " / ")}</span>
+                          <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
+                            {row.teach_mode.replace(/、/g, " / ")}
                           </span>
                         </div>
                       ) : null}
                       {(row.region || row.detail_address) ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">区域：</span>
-                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
-                            <span className="!whitespace-nowrap">{[row.region, row.detail_address].filter(Boolean).join(" · ")}</span>
+                          <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
+                            {[row.region, row.detail_address].filter(Boolean).join(" · ")}
                           </span>
                         </div>
                       ) : null}
                       {row.gender ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">性别：</span>
-                          <span className="min-w-0 overflow-visible text-gray-500 dark:text-gray-400">
-                            <span className="!whitespace-nowrap">{row.gender}</span>
+                          <span className="min-w-0 break-words text-gray-500 dark:text-gray-400">
+                            {row.gender}
                           </span>
                         </div>
                       ) : null}
@@ -385,7 +393,7 @@ function BoardPageContent() {
                       {row.subject ? (
                         <div className="contents">
                           <span className="shrink-0 text-base font-bold text-gray-800 dark:text-gray-200">科目：</span>
-                          <span className="flex min-w-0 flex-wrap items-center gap-1 overflow-visible">
+                          <span className="flex min-w-0 flex-wrap items-center gap-1">
                             {row.subject.split(/[、,，]/).map((s) => (
                               <span key={s} className={DEMAND_SUBJECT_TAG_CLASS}>
                                 {s.trim()}
@@ -395,23 +403,15 @@ function BoardPageContent() {
                         </div>
                       ) : null}
                       {row.note && (
-                        <p className="mt-2 line-clamp-2 text-base text-muted-foreground">
+                        <p className="col-span-2 mt-2 line-clamp-2 text-base text-muted-foreground">
                           {row.note}
                         </p>
                       )}
-                      <p className="mt-3 flex items-center gap-1 text-sm text-primary">
+                      <p className="col-span-2 mt-3 flex items-center gap-1 text-sm text-primary">
                         <span>点开查看更多信息</span>
                         <ChevronRight className="h-4 w-4" />
                       </p>
                     </div>
-                    {(row.min_salary != null || row.max_salary != null) && (
-                      <div className="shrink-0 text-right">
-                        <div className="text-xl font-bold text-orange-500 dark:text-orange-400">
-                          ¥{row.min_salary ?? "?"}-{row.max_salary ?? "?"}
-                        </div>
-                        <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
-                      </div>
-                    )}
                   </div>
                 </Link>
               </li>
