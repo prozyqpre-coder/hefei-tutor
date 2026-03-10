@@ -53,6 +53,7 @@ export async function POST(request: Request) {
       real_name: (body.real_name as string)?.trim() || null,
       university,
       identity: (body.identity as string) || null,
+      badge_text: (body.badge_text as string)?.trim() || null,
       gender: (body.gender as string) || null,
       teach_mode: teachModeStr,
       regions: toTextArray(body.regions),

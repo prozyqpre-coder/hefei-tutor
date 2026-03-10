@@ -50,7 +50,7 @@ export async function GET(request: Request) {
   // 信息大厅只展示已发布（verified）；排序：sort_order 降序，再 created_at 倒序
   let q = supabase
     .from("tutor_posts")
-    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, auth_files, status, created_at")
+    .select("id, real_name, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, auth_files, status, created_at")
     .eq("status", "verified")
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });

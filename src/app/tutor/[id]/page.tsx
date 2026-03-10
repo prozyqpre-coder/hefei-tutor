@@ -13,6 +13,7 @@ type TutorDetail = {
   id: string;
   university: string | null;
   identity: string | null;
+  badge_text: string | null;
   gender: string | null;
   teach_mode: string | null;
   regions: string[] | null;
@@ -42,7 +43,7 @@ export default function TutorDetailPage() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("tutor_posts")
-          .select("id, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, created_at")
+          .select("id, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, created_at")
           .eq("id", params.id)
           .single();
         if (error) {

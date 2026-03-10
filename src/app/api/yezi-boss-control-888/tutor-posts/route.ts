@@ -47,7 +47,7 @@ export async function GET(request: Request) {
 
   let q = supabase
     .from("tutor_posts")
-    .select("id, real_name, university, identity, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, sort_order, created_at")
+    .select("id, real_name, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, sort_order, created_at")
     .in("status", ["pending", "verified", "rejected"])
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });

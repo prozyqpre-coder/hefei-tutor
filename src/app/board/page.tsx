@@ -30,6 +30,7 @@ type TutorRow = {
   real_name?: string | null;
   university: string | null;
   identity: string | null;
+  badge_text: string | null;
   gender: string | null;
   teach_mode: string | null;
   regions: string[] | null;
@@ -287,15 +288,35 @@ function BoardPageContent() {
                           <span className="shrink-0 text-xl font-bold !whitespace-nowrap">
                             {row.real_name ? `${row.real_name[0]}老师` : "教员"}
                           </span>
-                          {row.status === "verified" ? (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-3 py-1 text-sm font-medium text-amber-700 overflow-visible !whitespace-nowrap dark:text-amber-400">
-                              <ShieldCheck className="h-3.5 w-3.5" /> 实名认证
-                            </span>
-                          ) : (
-                            <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground overflow-visible !whitespace-nowrap">
-                              <ShieldAlert className="h-3.5 w-3.5" /> 未认证
-                            </span>
-                          )}
+                          {(() => {
+                            const badgeText = row.badge_text || (row.status === "verified" ? "实名认证" : "");
+                            if (!badgeText) {
+                              return (
+                                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs sm:text-sm text-muted-foreground">
+                                  <ShieldAlert className="h-3.5 w-3.5" /> 未认证
+                                </span>
+                              );
+                            }
+                            const colorClass =
+                              badgeText === "金牌教员"
+                                ? "bg-yellow-500 text-white"
+                                : badgeText === "优秀教员"
+                                  ? "bg-blue-500 text-white"
+                                  : badgeText === "学证已验"
+                                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                    : badgeText === "家长力荐"
+                                      ? "bg-pink-500 text-white"
+                                      : "bg-amber-500/15 text-amber-700 dark:text-amber-400";
+                            return (
+                              <span className={cn(
+                                "inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1 text-xs sm:text-sm leading-tight max-w-[7.5rem] break-words",
+                                colorClass
+                              )}>
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                {badgeText}
+                              </span>
+                            );
+                          })()}
                         </div>
                         <p className="mt-1 flex flex-nowrap items-center gap-x-1 overflow-visible text-base leading-relaxed text-muted-foreground">
                           {row.real_name && <span className="shrink-0 overflow-visible !whitespace-nowrap">{row.real_name}</span>}
