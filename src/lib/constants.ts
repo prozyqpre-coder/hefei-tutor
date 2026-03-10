@@ -87,10 +87,12 @@ export const USER_IDENTITY = [
   { value: "parent", label: "家长" },
 ] as const;
 
-/** 学历：本科 / 研究生（注册时身份） */
+/** 学历（教员教育背景） */
 export const DEGREES = [
-  { value: "本科", label: "本科生" },
-  { value: "研究生", label: "研究生" },
+  { value: "本科生", label: "本科生" },
+  { value: "硕士研究生", label: "硕士研究生" },
+  { value: "博士研究生", label: "博士研究生" },
+  { value: "在职老师", label: "在职老师" },
 ] as const;
 
 export type Degree = (typeof DEGREES)[number]["value"];

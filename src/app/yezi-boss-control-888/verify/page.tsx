@@ -17,7 +17,9 @@ const MODE_OPTIONS = [
 
 const IDENTITY_OPTIONS = [
   { value: "本科生", label: "本科生" },
-  { value: "研究生", label: "研究生" },
+  { value: "硕士研究生", label: "硕士研究生" },
+  { value: "博士研究生", label: "博士研究生" },
+  { value: "在职老师", label: "在职老师" },
 ] as const;
 
 type PendingRow = {
@@ -81,7 +83,7 @@ export default function AdminVerifyPage() {
   const [editingTutor, setEditingTutor] = useState<PendingRow | null>(null);
   const [editingTutorRealName, setEditingTutorRealName] = useState("");
   const [editingTutorUniversity, setEditingTutorUniversity] = useState("");
-  const [editingTutorIdentity, setEditingTutorIdentity] = useState<"本科生" | "研究生" | "">("");
+  const [editingTutorIdentity, setEditingTutorIdentity] = useState<string>("");
   const [editingTutorGender, setEditingTutorGender] = useState<"男" | "女" | "">("");
   const [editingTutorModes, setEditingTutorModes] = useState<string[]>([]);
   const [editingTutorRegions, setEditingTutorRegions] = useState<string[]>([]);
@@ -107,7 +109,7 @@ export default function AdminVerifyPage() {
   const [publishLoading, setPublishLoading] = useState(false);
   const [publishRealName, setPublishRealName] = useState("");
   const [publishUniversity, setPublishUniversity] = useState("");
-  const [publishIdentity, setPublishIdentity] = useState<"本科生" | "研究生" | "">("");
+  const [publishIdentity, setPublishIdentity] = useState<string>("");
   const [publishGender, setPublishGender] = useState<"男" | "女" | "">("");
   const [publishModes, setPublishModes] = useState<string[]>([]);
   const [publishRegions, setPublishRegions] = useState<string[]>([]);
@@ -226,7 +228,7 @@ export default function AdminVerifyPage() {
     setEditingTutor(row);
     setEditingTutorRealName(row.real_name || "");
     setEditingTutorUniversity(row.university || "");
-    setEditingTutorIdentity((row.identity as "本科生" | "研究生" | null) || "");
+    setEditingTutorIdentity((row.identity as string) || "");
     setEditingTutorGender((row.gender as "男" | "女" | null) || "");
     setEditingTutorModes(row.teach_mode ? row.teach_mode.split("、").filter(Boolean) : []);
     setEditingTutorRegions(row.regions || []);

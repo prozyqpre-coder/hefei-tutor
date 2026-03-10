@@ -41,6 +41,7 @@ export async function GET(request: Request) {
   const mode = searchParams.get("mode");
   const minSalary = searchParams.get("min_salary");
   const maxSalary = searchParams.get("max_salary");
+  const education = searchParams.get("education");
 
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, {
     auth: { persistSession: false },
@@ -58,6 +59,7 @@ export async function GET(request: Request) {
   if (region) q = q.contains("regions", [region]);
   if (minSalary) q = q.gte("min_salary", Number(minSalary));
   if (maxSalary) q = q.lte("max_salary", Number(maxSalary));
+  if (education) q = q.eq("identity", education);
 
   const { data: rows, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

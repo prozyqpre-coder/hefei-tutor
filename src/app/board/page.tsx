@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS } from "@/lib/constants";
+import { HEFEI_AREAS_FULL, GRADES_SHORT, SUBJECTS, TEACHER_GRADE_OPTIONS, DEGREES } from "@/lib/constants";
 import { WECHAT_DEMAND, WECHAT_TUTOR } from "@/lib/wechat";
 import { teacherGradesForDisplay } from "@/lib/grades";
 import { cn } from "@/lib/utils";
@@ -80,6 +80,7 @@ function BoardPageContent() {
     mode: "",
     min_salary: "",
     max_salary: "",
+    education: "",
   });
 
   const fetchTutors = useCallback(async () => {
@@ -90,6 +91,7 @@ function BoardPageContent() {
     if (filters.mode) params.set("mode", filters.mode);
     if (filters.min_salary) params.set("min_salary", filters.min_salary);
     if (filters.max_salary) params.set("max_salary", filters.max_salary);
+    if (filters.education) params.set("education", filters.education);
     const res = await fetch(`/api/board/tutors?${params}`);
     const data = await res.json();
     if (data.list) setTutors(data.list);
@@ -141,10 +143,11 @@ function BoardPageContent() {
             onClick={() => setFilterOpen((o) => !o)}
             className="flex min-h-[44px] w-full items-center justify-between text-sm text-muted-foreground"
           >
-            <span>筛选：区域、年级、科目、模式</span>
+            <span>筛选：区域、年级、科目、模式、学历</span>
             <ChevronDown className={cn("h-4 w-4 transition", filterOpen && "rotate-180")} />
           </button>
           {filterOpen && (
+            <>
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
               <select
                 value={filters.region}
@@ -213,6 +216,37 @@ function BoardPageContent() {
                 </>
               )}
             </div>
+            {tab === "tutors" && (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                <span className="shrink-0 text-muted-foreground">学历要求：</span>
+                <div className="flex flex-1 gap-2 overflow-x-auto">
+                  <button
+                    type="button"
+                    onClick={() => setFilters((f) => ({ ...f, education: "" }))}
+                    className={cn(
+                      "whitespace-nowrap rounded-full border px-3 py-1",
+                      !filters.education ? "border-primary bg-primary/10 text-primary" : "border-input text-muted-foreground"
+                    )}
+                  >
+                    全部
+                  </button>
+                  {DEGREES.map((deg) => (
+                    <button
+                      key={deg.value}
+                      type="button"
+                      onClick={() => setFilters((f) => ({ ...f, education: deg.value }))}
+                      className={cn(
+                        "whitespace-nowrap rounded-full border px-3 py-1",
+                        filters.education === deg.value ? "border-primary bg-primary/10 text-primary" : "border-input text-muted-foreground"
+                      )}
+                    >
+                      {deg.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            </>
           )}
         </div>
       </div>
