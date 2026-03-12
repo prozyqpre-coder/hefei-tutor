@@ -268,11 +268,6 @@ function BoardPageContent() {
                     href={`/tutor/${row.id}`}
                     className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
-                    {row.serial_number && (
-                      <span className="absolute left-3 top-2 z-10 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
-                        No. {row.serial_number}
-                      </span>
-                    )}
                     {(row.min_salary != null || row.max_salary != null) && (
                       <div className="absolute right-3 top-4 z-10 text-right">
                         <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
@@ -280,6 +275,11 @@ function BoardPageContent() {
                         </div>
                         <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
                       </div>
+                    )}
+                    {row.serial_number && (
+                      <span className="mb-1 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                        No. {row.serial_number}
+                      </span>
                     )}
                     <div className="flex items-start gap-3">
                       <div className={cn("relative shrink-0", row.status === "verified" ? "rounded-full p-[3px] bg-gradient-to-r from-amber-400 via-violet-400 to-amber-400" : "")}>
@@ -410,11 +410,6 @@ function BoardPageContent() {
                   href={`/demand/${row.id}`}
                   className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
-                  {row.serial_number && (
-                    <span className="absolute left-3 top-2 z-10 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
-                      No. {row.serial_number}
-                    </span>
-                  )}
                   {(row.min_salary != null || row.max_salary != null) && (
                     <div className="absolute right-3 top-4 z-10 text-right">
                       <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
@@ -422,6 +417,11 @@ function BoardPageContent() {
                       </div>
                       <div className="text-base font-medium text-orange-500/90 dark:text-orange-400/90">/小时</div>
                     </div>
+                  )}
+                  {row.serial_number && (
+                    <span className="mb-1 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                      No. {row.serial_number}
+                    </span>
                   )}
                   <div className="flex items-start gap-3 pr-[7.5rem]">
                     <div className="min-w-0 flex-1 grid grid-cols-[4rem_1fr] items-start gap-x-1 gap-y-2.5 text-base leading-relaxed">
