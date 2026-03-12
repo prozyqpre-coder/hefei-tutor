@@ -51,6 +51,7 @@ type PendingRow = {
   created_at: string;
   cert_urls: string[];
   sort_order?: number;
+  serial_number?: string | null;
 };
 
 type DemandAdminRow = {
@@ -66,6 +67,7 @@ type DemandAdminRow = {
   note: string | null;
   created_at: string;
   sort_order?: number;
+  serial_number?: string | null;
 };
 
 export default function AdminVerifyPage() {
@@ -105,6 +107,7 @@ export default function AdminVerifyPage() {
   const [editingTutorMaxSalary, setEditingTutorMaxSalary] = useState("");
   const [editingTutorNote, setEditingTutorNote] = useState("");
   const [editingTutorTeachingStyle, setEditingTutorTeachingStyle] = useState("");
+  const [editingTutorSerialNumber, setEditingTutorSerialNumber] = useState("");
   const [editingDemand, setEditingDemand] = useState<DemandAdminRow | null>(null);
   const [editingDemandModes, setEditingDemandModes] = useState<string[]>([]);
   const [editingRegion, setEditingRegion] = useState("");
@@ -115,6 +118,7 @@ export default function AdminVerifyPage() {
   const [editingMinSalary, setEditingMinSalary] = useState("");
   const [editingMaxSalary, setEditingMaxSalary] = useState("");
   const [editingNote, setEditingNote] = useState("");
+  const [editingDemandSerialNumber, setEditingDemandSerialNumber] = useState("");
 
   // 发布新信息表单
   const [publishType, setPublishType] = useState<"tutor" | "demand">("tutor");
@@ -134,6 +138,7 @@ export default function AdminVerifyPage() {
   const [publishDetailAddress, setPublishDetailAddress] = useState("");
   const [publishNote, setPublishNote] = useState("");
   const [publishTeachingStyle, setPublishTeachingStyle] = useState("");
+  const [publishSerialNumber, setPublishSerialNumber] = useState("");
 
   function togglePublishRegion(r: string) {
     setPublishRegions((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
@@ -169,6 +174,7 @@ export default function AdminVerifyPage() {
         min_salary: publishMinSalary.trim() ? Number(publishMinSalary) : null,
         max_salary: publishMaxSalary.trim() ? Number(publishMaxSalary) : null,
         note: publishNote.trim() || null,
+        serial_number: publishSerialNumber.trim() || null,
       };
       if (publishType === "tutor") {
         body.real_name = publishRealName.trim() || null;
@@ -207,6 +213,7 @@ export default function AdminVerifyPage() {
       setPublishDetailAddress("");
       setPublishNote("");
       setPublishTeachingStyle("");
+      setPublishSerialNumber("");
       setShowPublishModal(false);
       fetchList();
       fetchAllTutors();
@@ -253,6 +260,7 @@ export default function AdminVerifyPage() {
     setEditingTutorMaxSalary(row.max_salary != null ? String(row.max_salary) : "");
     setEditingTutorNote(row.note || "");
     setEditingTutorTeachingStyle(row.teaching_style || "");
+    setEditingTutorSerialNumber(row.serial_number || "");
   }
 
   function closeTutorEdit() {
@@ -270,6 +278,7 @@ export default function AdminVerifyPage() {
     setEditingTutorMaxSalary("");
     setEditingTutorNote("");
     setEditingTutorTeachingStyle("");
+    setEditingTutorSerialNumber("");
   }
 
   function openDemandEdit(d: DemandAdminRow) {
@@ -283,6 +292,7 @@ export default function AdminVerifyPage() {
     setEditingMinSalary(d.min_salary != null ? String(d.min_salary) : "");
     setEditingMaxSalary(d.max_salary != null ? String(d.max_salary) : "");
     setEditingNote(d.note || "");
+    setEditingDemandSerialNumber(d.serial_number || "");
   }
 
   function closeDemandEdit() {
@@ -296,6 +306,7 @@ export default function AdminVerifyPage() {
     setEditingMinSalary("");
     setEditingMaxSalary("");
     setEditingNote("");
+    setEditingDemandSerialNumber("");
   }
 
   const [sortSavingId, setSortSavingId] = useState<string | null>(null);
@@ -673,6 +684,11 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="space-y-0.5">
                       <div className="flex flex-wrap items-center gap-2">
+                        {t.serial_number && (
+                          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            {t.serial_number}
+                          </span>
+                        )}
                         <span className="font-medium text-foreground">
                           {t.real_name
                             ? `${t.real_name[0]}老师`
@@ -796,6 +812,11 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="text-sm text-muted-foreground space-y-1">
                       <div>
+                        {d.serial_number && (
+                          <span className="mr-1.5 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            {d.serial_number}
+                          </span>
+                        )}
                         <span className="font-medium text-foreground">学生</span>
                         {d.gender && <span className="ml-2">性别：{d.gender}</span>}
                         {d.student_grade && <span className="ml-2">年级：{d.student_grade}</span>}
@@ -919,6 +940,13 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
             >
               发布家长需求
             </button>
+          </div>
+
+          <div>
+            <label className="block text-xs text-muted-foreground">
+              {publishType === "tutor" ? "教员编号（例如 M101、B205、T007）" : "需求编号（例如 S055）"}
+            </label>
+            <input value={publishSerialNumber} onChange={(e) => setPublishSerialNumber(e.target.value.slice(0, 20))} maxLength={20} placeholder={publishType === "tutor" ? "如 M101" : "如 S055"} className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1.5 text-sm" />
           </div>
 
           {publishType === "tutor" && (
@@ -1128,6 +1156,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                   max_salary: max != null && !Number.isNaN(max) ? max : null,
                   note: editingTutorNote.trim() || null,
                   teaching_style: editingTutorTeachingStyle.trim() || null,
+                  serial_number: editingTutorSerialNumber.trim() || null,
                 };
                 try {
                   const res = await fetch(adminApiPath("tutor-posts"), {
@@ -1146,6 +1175,16 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                 }
               }}
             >
+              <div>
+                <label className="block text-xs text-muted-foreground">教员编号（例如 M101、B205、T007）</label>
+                <input
+                  value={editingTutorSerialNumber}
+                  maxLength={20}
+                  onChange={(e) => setEditingTutorSerialNumber(e.target.value.slice(0, 20))}
+                  placeholder="如 M101"
+                  className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1"
+                />
+              </div>
               <div>
                 <label className="block text-xs text-muted-foreground">姓名（10 字以内）</label>
                 <input
@@ -1383,6 +1422,7 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                   min_salary: min != null && !Number.isNaN(min) ? min : null,
                   max_salary: max != null && !Number.isNaN(max) ? max : null,
                   note: editingNote.trim() || null,
+                  serial_number: editingDemandSerialNumber.trim() || null,
                 };
                 try {
                   const res = await fetch(adminApiPath("demand-posts"), {
@@ -1400,6 +1440,16 @@ if (!window.confirm("确定要删除这条教员信息吗？删除后无法恢�
                 }
               }}
             >
+              <div>
+                <label className="block text-xs text-muted-foreground">需求编号（例如 S055）</label>
+                <input
+                  value={editingDemandSerialNumber}
+                  maxLength={20}
+                  onChange={(e) => setEditingDemandSerialNumber(e.target.value.slice(0, 20))}
+                  placeholder="如 S055"
+                  className="mt-1 w-full rounded-md border border-input bg-background px-2 py-1"
+                />
+              </div>
               <div>
                 <label className="block text-xs text-muted-foreground">授课方式（可多选）</label>
                 <div className="mt-1 flex flex-wrap gap-2">

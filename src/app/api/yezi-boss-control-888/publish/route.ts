@@ -63,6 +63,7 @@ export async function POST(request: Request) {
       max_salary: body.max_salary != null && Number.isFinite(Number(body.max_salary)) ? Number(body.max_salary) : null,
       note: (body.note as string)?.trim() || null,
       teaching_style: (body.teaching_style as string)?.trim() || null,
+      serial_number: (body.serial_number as string)?.trim() || null,
       auth_files: [],
       status: "verified",
       sort_order: 0,
@@ -82,6 +83,7 @@ export async function POST(request: Request) {
     min_salary: body.min_salary != null && Number.isFinite(Number(body.min_salary)) ? Number(body.min_salary) : null,
     max_salary: body.max_salary != null && Number.isFinite(Number(body.max_salary)) ? Number(body.max_salary) : null,
     note: (body.note as string)?.trim() || null,
+    serial_number: (body.serial_number as string)?.trim() || null,
     sort_order: 0,
   };
   const { error } = await supabase.from("demand_posts").insert(row);

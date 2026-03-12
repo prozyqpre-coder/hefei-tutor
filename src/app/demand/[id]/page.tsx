@@ -18,6 +18,7 @@ type DemandDetail = {
   min_salary: number | null;
   max_salary: number | null;
   note: string | null;
+  serial_number: string | null;
   created_at: string;
 };
 
@@ -37,7 +38,7 @@ export default function DemandDetailPage() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("demand_posts")
-          .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, created_at")
+          .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, serial_number, created_at")
           .eq("id", params.id)
           .single();
         if (error) {
@@ -79,7 +80,14 @@ export default function DemandDetailPage() {
     <div className="px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold">{maskedName}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">{maskedName}</h1>
+            {data.serial_number && (
+              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-mono text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                No. {data.serial_number}
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">
             {(data.teach_mode && data.teach_mode.replace(/、/g, " / ")) || "未填写"}
             {data.gender ? ` · 学生性别：${data.gender}` : ""}

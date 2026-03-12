@@ -24,6 +24,7 @@ type TutorDetail = {
   note: string | null;
   teaching_style: string | null;
   status: string;
+  serial_number: string | null;
   created_at: string;
 };
 
@@ -43,7 +44,7 @@ export default function TutorDetailPage() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("tutor_posts")
-          .select("id, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, created_at")
+          .select("id, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, serial_number, created_at")
           .eq("id", params.id)
           .single();
         if (error) {
@@ -85,7 +86,14 @@ export default function TutorDetailPage() {
     <div className="px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold">{maskedName}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">{maskedName}</h1>
+            {data.serial_number && (
+              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-mono text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                No. {data.serial_number}
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-xs text-muted-foreground">
             {data.university}
             {data.identity ? ` · ${data.identity}` : ""}

@@ -41,6 +41,7 @@ type TutorRow = {
   note?: string | null;
   teaching_style?: string | null;
   status: string;
+  serial_number?: string | null;
   created_at: string;
 };
 
@@ -55,6 +56,7 @@ type DemandRow = {
   min_salary: number | null;
   max_salary: number | null;
   note?: string | null;
+  serial_number?: string | null;
   created_at: string;
 };
 
@@ -266,6 +268,11 @@ function BoardPageContent() {
                     href={`/tutor/${row.id}`}
                     className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
+                    {row.serial_number && (
+                      <span className="absolute left-3 top-2 z-10 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                        No. {row.serial_number}
+                      </span>
+                    )}
                     {(row.min_salary != null || row.max_salary != null) && (
                       <div className="absolute right-3 top-4 z-10 text-right">
                         <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">
@@ -403,6 +410,11 @@ function BoardPageContent() {
                   href={`/demand/${row.id}`}
                   className="relative block overflow-visible rounded-xl bg-card px-3 py-4 shadow-sm transition-shadow duration-200 hover:shadow-md"
                 >
+                  {row.serial_number && (
+                    <span className="absolute left-3 top-2 z-10 rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono leading-tight text-gray-400 dark:bg-gray-800 dark:text-gray-500">
+                      No. {row.serial_number}
+                    </span>
+                  )}
                   {(row.min_salary != null || row.max_salary != null) && (
                     <div className="absolute right-3 top-4 z-10 text-right">
                       <div className="text-xl font-bold leading-tight text-orange-500 dark:text-orange-400">

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, { auth: { persistSession: false } });
   let q = supabase
     .from("demand_posts")
-    .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, created_at")
+    .select("id, teach_mode, region, detail_address, gender, subject, student_grade, min_salary, max_salary, note, serial_number, created_at")
     .order("sort_order", { ascending: false })
     .order("created_at", { ascending: false });
 
