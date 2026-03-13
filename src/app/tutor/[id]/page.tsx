@@ -11,6 +11,7 @@ import { ShieldCheck, ShieldAlert, Mail } from "lucide-react";
 
 type TutorDetail = {
   id: string;
+  real_name: string | null;
   university: string | null;
   identity: string | null;
   badge_text: string | null;
@@ -44,7 +45,9 @@ export default function TutorDetailPage() {
         const supabase = createClient();
         const { data, error } = await supabase
           .from("tutor_posts")
-          .select("id, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, serial_number, created_at")
+          .select(
+            "id, real_name, university, identity, badge_text, gender, teach_mode, regions, grades, subjects, min_salary, max_salary, note, teaching_style, status, serial_number, created_at"
+          )
           .eq("id", params.id)
           .single();
         if (error) {
@@ -80,7 +83,8 @@ export default function TutorDetailPage() {
     );
   }
 
-  const maskedName = `${(data.real_name || data.university || "合肥")[0] || "合肥"}老师`;
+  const nameSource = (data.real_name && data.real_name.trim()) || (data.university && data.university.trim()) || "合肥";
+  const maskedName = `${nameSource[0] || "合肥"}老师`;
 
   return (
     <div className="px-4 py-6 space-y-4">
