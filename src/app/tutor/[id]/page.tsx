@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 import { WechatContactButton } from "@/components/WechatContactButton";
 import { ShieldCheck, ShieldAlert, Mail } from "lucide-react";
 
+function compactIdentity(identity: string | null): string {
+  if (!identity) return "";
+  if (identity === "本科生") return "本科";
+  if (identity === "硕士研究生") return "硕士";
+  if (identity === "博士研究生") return "博士";
+  return identity;
+}
+
 type TutorDetail = {
   id: string;
   real_name: string | null;
@@ -100,7 +108,7 @@ export default function TutorDetailPage() {
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
             {data.university}
-            {data.identity ? ` · ${data.identity}` : ""}
+            {data.identity ? ` · ${compactIdentity(data.identity)}` : ""}
             {data.gender ? ` · ${data.gender}` : ""}
           </p>
         </div>

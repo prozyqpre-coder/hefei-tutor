@@ -25,6 +25,14 @@ const DEMAND_GRADE_TAG_CLASS =
 const DEMAND_SUBJECT_TAG_CLASS =
   "inline-flex shrink-0 items-center rounded-md border-[0.5px] border-blue-200 bg-blue-50 px-1.5 py-1 text-sm text-blue-600 tracking-tighter overflow-visible !whitespace-nowrap sm:px-2 sm:text-base dark:border-blue-300/50 dark:bg-blue-100/50 dark:text-blue-700";
 
+function compactIdentity(identity: string | null): string {
+  if (!identity) return "";
+  if (identity === "本科生") return "本科";
+  if (identity === "硕士研究生") return "硕士";
+  if (identity === "博士研究生") return "博士";
+  return identity;
+}
+
 type TutorRow = {
   id: string;
   real_name?: string | null;
@@ -328,7 +336,7 @@ function BoardPageContent() {
                         <p className="mt-1 flex flex-nowrap items-center gap-x-1 overflow-visible text-base leading-relaxed text-muted-foreground">
                           {row.real_name && <span className="shrink-0 overflow-visible !whitespace-nowrap">{row.real_name}</span>}
                           {row.university && <span className="shrink-0 overflow-visible !whitespace-nowrap">{row.real_name ? ` · ${row.university}` : row.university}</span>}
-                          {row.identity && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.identity}`}</span>}
+                          {row.identity && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${compactIdentity(row.identity)}`}</span>}
                           {row.gender && <span className="shrink-0 overflow-visible !whitespace-nowrap">{` · ${row.gender}`}</span>}
                         </p>
                         <div className="mt-3 grid grid-cols-[4rem_1fr] grid-rows-auto items-start gap-x-1 gap-y-2.5 text-base leading-relaxed">
