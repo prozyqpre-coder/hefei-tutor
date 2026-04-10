@@ -89,9 +89,9 @@ export const USER_IDENTITY = [
 
 /** 学历（教员教育背景） */
 export const DEGREES = [
-  { value: "本科生", label: "本科生" },
-  { value: "硕士研究生", label: "硕士研究生" },
-  { value: "博士研究生", label: "博士研究生" },
+  { value: "本科生", label: "本科" },
+  { value: "硕士研究生", label: "硕士" },
+  { value: "博士研究生", label: "博士" },
   { value: "在职老师", label: "在职老师" },
 ] as const;
 
